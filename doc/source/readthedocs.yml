@@ -1,0 +1,8 @@
+python:
+   setup_py_install: true
+conda:
+    file: environment.yml
+$ cat environment.yml 
+name: pyfme
+dependencies:
+  - numpy >=1.7+

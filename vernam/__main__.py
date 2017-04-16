@@ -9,14 +9,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
                 description="Vernam cipher implementation",
                 add_help=True)
-    """
-    Yes, this is trolling, -e and -d has no effect
-    """
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('-e', '--encrypt',
-                        help="Encryption mode")
-    group.add_argument('-d', '--decrypt',
-                        help="Decryption mode")
+    group.add_argument('--lz4', required=False, choices=['encrypt', 'decrypt'],
+                        help="Use lz4 compression while (en|de)crypting")
+    group.add_argument('--base32', action='store_true', default=False,
+                        help="Use base32 mode")
+    group.add_argument('--raw', action='store_true', default=False,
+                        help="Use raw mode (default option)")
     parser.add_argument('-i', '--inputfile', required=True,
                         help="File to encrypt or decrypt")
     parser.add_argument('-o', '--outputfile', required=True,
@@ -27,17 +26,15 @@ if __name__ == '__main__':
     parser.add_argument('-k', '--keyfile', required=False,
                         help="Path to a file containing the random data used as\
                         key for the cipher")
-    parser.add_argument("-m", "--workmode", required=False,
-                        choices=["lz4", "base32", "raw"],
-                        help="Choose an optimization (lz4, base32 or raw)")
     parser.add_argument("-f", "--force", action='store_true', default=False,
                         help="Force to overwrite output file")
     args = parser.parse_args()
 
     configFromFile = configuration.readConfig(args.config)
     config = configuration.parseConfig(configFromFile, args)
-    print("mode: {}, input file: {}, output file: {}, config file: {}, ".format(
-            config["mode"],args.inputfile, args.outputfile, args.config)
+    print("input file: {}, output file: {}, config file: {}, ".format(
+            args.inputfile, args.outputfile, args.config)
             + "key file: {}, operation mode: {}".format(config["keyfile"],
             config["workmode"]))
-    vernam(args.inputfile, config["keyfile"], args.outputfile, force=args.force)
+    vernam(args.inputfile, config["keyfile"], args.outputfile, force=args.force,
+            mode=config["workmode"])

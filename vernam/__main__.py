@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# TODO LICENSE AND THAT STUFF
-
 
 import argparse
 

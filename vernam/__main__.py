@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import configuration
 import argparse
+from vernam import vernam
 from cipher import xor
 
 if __name__ == '__main__':
@@ -8,6 +9,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
                 description="Vernam cipher implementation",
                 add_help=True)
+    """
+    Yes, this is trolling, -e and -d has no effect
+    """
     group = parser.add_mutually_exclusive_group()
     group.add_argument('-e', '--encrypt',
                         help="Encryption mode")
@@ -15,7 +19,7 @@ if __name__ == '__main__':
                         help="Decryption mode")
     parser.add_argument('-i', '--inputfile', required=True,
                         help="File to encrypt or decrypt")
-    parser.add_argument('-o', '--outputfile', required=False, default="stdout",
+    parser.add_argument('-o', '--outputfile', required=True,
                         help="File to store output, stdout by default")
     parser.add_argument('-c', '--config', required=False,
                         default="config.yaml",
@@ -33,3 +37,4 @@ if __name__ == '__main__':
     print("mode: {}, input file: {}, output file: {}, config file: {}, \
             key file: {}, operation mode: {}".format(config["mode"], args.inputfile,
             args.outputfile, args.config, config["keyfile"], config["workmode"] ))
+    vernam(args.inputfile, config["keyfile"], args.outputfile)

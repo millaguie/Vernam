@@ -5,7 +5,7 @@ def readConfig(config):
     """
     This function reads configuration file and combine it with parameters from
     console input to generate the configuration list.
-      parameters
+      Parameters
     -----------
     config: configuration file to be readed
 

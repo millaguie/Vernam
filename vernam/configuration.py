@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import yaml
+import os
+import sys
 
 def readConfig(config):
     """
@@ -21,6 +23,12 @@ def readConfig(config):
             the sides is doing the maths by hand.
         raw  : default operation mode, will use 1KB pages for ciphering
     """
+    if not os.path.exists(config):
+            sys.stderr.write("Could not find config file, "
+                +"creating a default one\n")
+            configFile = open(config, "w")
+            configFile.write("---\nkeyfile: defaultrawfile.rnd\nworkmode: raw")
+            configFile.close()
     return yaml.load(open(config,'r'))
 
 def parseConfig(configFromFile, configFromCmd):

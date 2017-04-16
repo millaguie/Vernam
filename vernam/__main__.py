@@ -30,11 +30,14 @@ if __name__ == '__main__':
     parser.add_argument("-m", "--workmode", required=False,
                         choices=["lz4", "base32", "raw"],
                         help="Choose an optimization (lz4, base32 or raw)")
+    parser.add_argument("-f", "--force", action='store_true', default=False,
+                        help="Force to overwrite output file")
     args = parser.parse_args()
 
     configFromFile = configuration.readConfig(args.config)
     config = configuration.parseConfig(configFromFile, args)
-    print("mode: {}, input file: {}, output file: {}, config file: {}, \
-            key file: {}, operation mode: {}".format(config["mode"], args.inputfile,
-            args.outputfile, args.config, config["keyfile"], config["workmode"] ))
-    vernam(args.inputfile, config["keyfile"], args.outputfile)
+    print("mode: {}, input file: {}, output file: {}, config file: {}, ".format(
+            config["mode"],args.inputfile, args.outputfile, args.config)
+            + "key file: {}, operation mode: {}".format(config["keyfile"],
+            config["workmode"]))
+    vernam(args.inputfile, config["keyfile"], args.outputfile, force=args.force)

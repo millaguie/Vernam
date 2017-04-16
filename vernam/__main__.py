@@ -5,18 +5,17 @@
 
 import argparse
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
                 description="Vernam cipher implementation",
                 add_help=True)
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('-e', '--encript',
-                        help="Encription mode")
-    group.add_argument('-d', '--decript',
-                        help="Decription mode")
+    group.add_argument('-e', '--encrypt',
+                        help="Encryption mode")
+    group.add_argument('-d', '--decrypt',
+                        help="Decryption mode")
     parser.add_argument('-i', '--inputfile', required=True,
-                        help="File to encript or decript")
+                        help="File to encrypt or decrypt")
     parser.add_argument('-o', '--outputfile', required=False, default="stdout",
                         help="File to store output, stdout by default")
     parser.add_argument('-c', '--config', required=False,
@@ -31,10 +30,10 @@ if __name__ == '__main__':
                         default="raw",
                         help="Choose an optimization (lz4, base32 or raw)")
     args = parser.parse_args()
-    if 'encript' in locals():
-        mode = "encript"
+    if 'encrypt' in locals():
+        mode = "encrypt"
     else:
-        mode ="decript"
+        mode ="decrypt"
 
     print("mode: {}, input file: {}, output file: {}, config file: {}, \
             key file: {}, operation mode: {}".format(mode, args.inputfile,

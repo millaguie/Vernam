@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-
-
+import configuration
 import argparse
+from cipher import xor
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser(
                 description="Vernam cipher implementation",
                 add_help=True)
@@ -20,19 +21,15 @@ if __name__ == '__main__':
                         default="config.yaml",
                         help="path to configuration file")
     parser.add_argument('-k', '--keyfile', required=False,
-                        default="keyfile.rnd",
                         help="Path to a file containing the random data used as\
                         key for the cipher")
-    parser.add_argument("-m", "--mode", required=False,
+    parser.add_argument("-m", "--workmode", required=False,
                         choices=["lz4", "base32", "raw"],
-                        default="raw",
                         help="Choose an optimization (lz4, base32 or raw)")
     args = parser.parse_args()
-    if 'encrypt' in locals():
-        mode = "encrypt"
-    else:
-        mode ="decrypt"
 
+    configFromFile = configuration.readConfig(args.config)
+    config = configuration.parseConfig(configFromFile, args)
     print("mode: {}, input file: {}, output file: {}, config file: {}, \
-            key file: {}, operation mode: {}".format(mode, args.inputfile,
-            args.outputfile, args.config, args.keyfile, args.mode ))
+            key file: {}, operation mode: {}".format(config["mode"], args.inputfile,
+            args.outputfile, args.config, config["keyfile"], config["workmode"] ))

@@ -6,6 +6,27 @@ import tempfile
 
 
 """main file"""
+def readKeyConfig(keypath, direction=1):
+    """
+    This function read config file for the current key, if there is no config
+    file, function will create a new one.
+
+     parameters
+    -----------
+    keypath   : path to the key file
+    direction : application can read this file 1 from the beggining to the end,
+                or 0 from the endto the beggining, this is only used when
+                creating a new config file
+    """
+    config = keypath +"yaml"
+    if not os.path.exists(config):
+            sys.stderr.write("Could not find key file configuration, "
+                +"creating a default one\n")
+            configFile = open(config, "w")
+            configFile.write("---\nkeyfile: {}\ndirection: {}\nlastbyteused: 0"
+                                .format(keypath,direction))
+            configFile.close()
+    return yaml.load(open(config,'r'))
 
 def vernam(inputpath, keypath, outputpath, force=False, mode="raw"):
     """

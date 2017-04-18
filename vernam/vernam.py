@@ -3,7 +3,7 @@ import sys
 import os
 from lz4 import compressHC, uncompress
 import tempfile
-
+import yaml
 
 """main file"""
 def readKeyConfig(keypath, direction=1):
@@ -75,12 +75,15 @@ def vernam(inputpath, keypath, outputpath, force=False, mode="raw"):
         else:
             sys.stderr.write("Output file will be overwritten as requested.\n")
 
+    keyConfig=readKeyConfig(keypath)
+
     try:
         if mode == "lz4e":
             inputfile=bytearray(compressHC((open(inputpath, 'rb')).read()))
         else:
             inputfile=bytearray(open(inputpath, 'rb').read())
         keyfile=bytearray(open(keypath, 'rb').read())
+        keyfile.seek(keyConfig["lastbyteused"])
     except:
         raise
     size=len(inputfile)
@@ -89,4 +92,6 @@ def vernam(inputpath, keypath, outputpath, force=False, mode="raw"):
         outputfile[i] = inputfile[i] ^ keyfile[i]
     if mode == "lz4d":
         outputfile=uncompress(str(outputfile))
+
+    setLastByteUsed(keypath, keyConfig["lastbyteused"]+size)
     open(outputpath, 'wb').write(outputfile)

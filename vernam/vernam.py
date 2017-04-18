@@ -28,6 +28,25 @@ def readKeyConfig(keypath, direction=1):
             configFile.close()
     return yaml.load(open(config,'r'))
 
+def setLastByteUsed(keypath, lastByteUsed):
+    """
+    This function update config file for the current key setting last byte used
+    attribute
+
+     parameters
+    -----------
+    keypath      : path to the key file
+    lastByteUsed : last byte used on key
+    """
+    config = keypath +"yaml"
+    with open(config) as f:
+        configFile = yaml.load(f)
+
+    configFile['lastbyteused'] = lastByteUsed
+
+    with open(config, 'w') as f:
+        yaml.dump(configFile, f)
+
 def vernam(inputpath, keypath, outputpath, force=False, mode="raw"):
     """
     This function performs vernam cipher with using an input file and a key,

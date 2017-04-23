@@ -3,6 +3,7 @@ import configuration
 import argparse
 from vernam import vernam
 from cipher import xor
+from keymanagement import catalog
 
 if __name__ == '__main__':
 

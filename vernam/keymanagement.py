@@ -4,21 +4,14 @@ import yaml
 import uuid
 import hashlib
 
-
-def catalog(keyPath):
+def getKeyHashFromKey(keyPath):
     """
-    This function catalogs a new keyfile by creating a description yaml file
+    This function get the hashcode for the key, it returns a hash.
 
      parameters
     -----------
     keyPath : path to the file used as key
     """
-
-    if not os.path.exists(keyPath):
-        sys.exit("Could not find key {}".format(keyPath))
-    if os.path.exists(keyPath+".yaml"):
-        sys.exit("A description file already exists, won't create a new one")
-    genUUID=uuid.uuid4()
     print("Generating hash of key, this might take some time")
     BLOCKSIZE = 65536
     hasher = hashlib.sha512()
@@ -27,14 +20,29 @@ def catalog(keyPath):
         while len(buf) > 0:
             hasher.update(buf)
             buf = f.read(BLOCKSIZE)
-    hashSum=hasher.hexdigest()
+    return hasher.hexdigest()
+
+def catalog(keyPath):
+    """
+    This function catalogs a new keyfile by creating a description yaml file
+
+     Parameters
+    -----------
+    keyPath : path to the file used as key
+    """
+
+    if not os.path.exists(keyPath):
+        sys.exit("Could not find key {}".format(keyPath))
+    if os.path.exists(keyPath+".yaml"):
+        sys.exit("A description file already exists, won't create a new one")
+    genUUID = uuid.uuid4()
+    hashSum = getKeyHashFromKey(keyPath)
     configFile = open(keyPath+".yaml", "w")
-    fileName=os.path.basename(keyPath)
+    fileName = os.path.basename(keyPath)
     configFile.write("---\n"+
                     "keyfile: {}\n".format(fileName) +
                     "UUID: {}\n".format(str(genUUID)) +
                     "sha512: {}".format(hashSum))
-
 
 def checkCatalogUUID(keyPath, binaryUUID=None, asciiUUID=None):
     """
@@ -64,7 +72,6 @@ def checkCatalogUUID(keyPath, binaryUUID=None, asciiUUID=None):
         return True
     else:
         return False
-
 
 def getCatalogUUID(keyPath):
     """

@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import configuration
 import argparse
-from vernam import vernam
-from cipher import xor
+import vernam
 from keymanagement import catalog
 
 if __name__ == '__main__':
@@ -44,6 +43,9 @@ if __name__ == '__main__':
                         "as key for the cipher")
     parser.add_argument("-f", "--force", action='store_true', default=False,
                         help="Force to overwrite output file")
+    parser.add_argument("--r2l", action='store_true', default=False,
+                        help="When catalogging a key, select read mode right "+
+                        "to left, by default will use left to right")
     args = parser.parse_args()
 
 
@@ -56,11 +58,15 @@ if __name__ == '__main__':
             args.inputfile, args.outputfile, args.config)
             + "key file: {}, operation mode: {}".format(config["keyfile"],
             config["workmode"]))
-    if args.encrypt is True or args.encrypt is True:
-        vernam(args.inputfile, config["keyfile"], args.outputfile,
+
+    if args.encrypt is True:
+        vernam.encrypt(args.inputfile, config["keyfile"], args.outputfile,
+            force=args.force, mode=config["workmode"])
+    elif args.decrypt is True:
+        vernam.decrypt(args.inputfile, config["keyfile"], args.outputfile,
             force=args.force, mode=config["workmode"])
     elif args.catalog is True:
-        catalog(args.inputfile)
+        catalog(args.inputfile,args.r2l)
     else:
         parser.error("Don't know what to do, an action (encrypt, decrypt or "+
                     "catalog) is mandatory")

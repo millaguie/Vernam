@@ -18,26 +18,29 @@ max_int64 = 0xFFFFFFFFFFFFFFFF
 
 
 def readMessage(keyPath, messagePath):
-        """
-        This function reads a message (envelope) in the defined format, and
-        returns the data inside the file, offset in key file and the raw data.
-        It checks that message key UUID matchs defined key UUID, also checks
-        consistency of message via sha512
+    """
+    This function reads a message (envelope) in the defined format, and
+    returns the data inside the file, offset in key file and the reading mode
+    for the key.
+    It checks that message key UUID matchs defined key UUID, also checks
+    consistency of message via sha512
 
-         Parameters
-        -----------
-        keyPath     : path to the file used as key
-        messagePath : path to the file used to read the message
-        """
+     Parameters
+    -----------
+    keyPath     : path to the file used as key
+    messagePath : path to the file used to read the message
+    """
     keyUUID = keymanagement.getCatalogUUID(keyPath)
-
     with open(messagePath, "rb") as file:
-        header = unpack(">iiiii", file.read(5*4))
-        print(header)
+        header = bytearray(unpack(">iiiii", file.read(5*4)))
+        if header == L2RHEADER:
+            L2R=True
+        elif header ==R2LHEADER:
+            L2R=False
+        else:
+            raise ValueError("File format unknown")
         msgSize = unpack(">Q",file.read(8))[0]
-        print(msgSize)
         offsetInKey = unpack(">Q",file.read(8))
-        #Hay que convertir los dos enteros de 64 bits en uno de 128
         msgKeyUUID1, msgKeyUUID2 = unpack(">QQ",file.read(16))
         print(type(msgKeyUUID1))
         msgKeyUUID = (msgKeyUUID1 << 64) | msgKeyUUID2
@@ -48,7 +51,7 @@ def readMessage(keyPath, messagePath):
         msgFileHash = file.read()
         if hashSum(message) != msgFileHash.encode("hex"):
             raise ValueError("Failed to hash message ")
-        return offsetInKey, message
+        return offsetInKey, L2R, message
 
 
 
@@ -79,7 +82,10 @@ def writeMessage(keyPath, messagePath, ciphered, offsetInKey, leftToRigth=True):
     print(ciphered)
     with open(messagePath, "wb") as file:
         # Write file header right to left or left to right
-        file.write(pack(">iiiii", *R2LHEADER))
+        if leftToRigth is true:
+            file.write(pack(">iiiii", *R2LHEADER))
+        else
+            file.write(pack(">iiiii", *R2LHEADER))
         # Write menssage size in bytes
         file.write(pack(">Q",msgSize))
         # Write offset in key to decrypt message

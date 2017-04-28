@@ -22,13 +22,14 @@ def getKeyHashFromKey(keyPath):
             buf = f.read(BLOCKSIZE)
     return hasher.hexdigest()
 
-def catalog(keyPath):
+def catalog(keyPath, l2r):
     """
     This function catalogs a new keyfile by creating a description yaml file
 
      Parameters
     -----------
     keyPath : path to the file used as key
+    l2r     : True if using left to right key reading
     """
 
     if not os.path.exists(keyPath):
@@ -37,12 +38,19 @@ def catalog(keyPath):
         sys.exit("A description file already exists, won't create a new one")
     genUUID = uuid.uuid4()
     hashSum = getKeyHashFromKey(keyPath)
+    if l2r is False:
+        startByte = os.path.getsize(keyPath)
+    else:
+        startByte = 0
     configFile = open(keyPath+".yaml", "w")
     fileName = os.path.basename(keyPath)
     configFile.write("---\n"+
                     "keyfile: {}\n".format(fileName) +
                     "UUID: {}\n".format(str(genUUID)) +
-                    "sha512: {}".format(hashSum))
+                    "sha512: {}\n".format(hashSum) +
+                    "l2r: {}\n".format(l2r) +
+                    "nextByte: {}".format(startByte)
+                    )
 
 def checkCatalogUUID(keyPath, binaryUUID=None, asciiUUID=None):
     """
@@ -91,3 +99,69 @@ def getCatalogUUID(keyPath):
     keyConfig = {}
     keyConfig = yaml.load(open(keyPath+".yaml",'r'))
     return uuid.UUID("urn:uuid:"+keyConfig["UUID"])
+
+def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
+    """
+    This function read bytes from key and return them. If reading in l2r mode
+    function will return bytes reordered to r2l. If waste is true, will mark all
+    readebytes as used into key yaml file, when using waste offset may not be
+    set, as we will start in the last byte used.
+
+     Parameters
+    -----------
+    keyPath : path to the file used as key
+    size    : size in bytes to read
+    l2r     : True if using left to right key reading
+    offset  : where in key start to read
+    waste   : Mark read bytes as used and update key config
+    """
+
+    keySize= os.path.getsize(keyPath)
+    print("keysize: {}".format(keySize))
+
+    if offset is not None and offset > keySize:
+        sys.exit("key is smaller than key offset")
+
+    keyConfig = yaml.load(open(keyPath+".yaml",'r'))
+    if offset is None and waste is True:
+        offset = keyConfig["nextByte"]
+        l2r = keyConfig["l2r"]
+    elif l2r is None:
+        l2r = not keyConfig["l2r"]
+
+    if l2r is False:
+        if offset - size < 0:
+            sys.exit("Do not have enough unused key to complete this action")
+        else:
+            print ("keysize: {}, offset: {}, size: {}".format(keySize,offset,size))
+            print("{} of {} bytes will be in use after this action".format(
+                keySize - (offset - size), keySize))
+    else:
+        if offset + size > keySize:
+            sys.exit("Do not have enough unused key to complete this action")
+        else:
+            print("{} of {} bytes will be in use after this action".format(
+                offset + size,keySize))
+
+    if l2r is True:
+        try:
+            inputFile = open(keyPath, 'rb')
+            inputFile.seek(offset)
+            key=inputFile.read(size)
+            offset = offset + size + 1
+        except:
+            raise
+    else:
+        try:
+            inputFile = open(keyPath, 'rb')
+            inputFile.seek(offset - size)
+            keyR=inputFile.read(size)
+            offset = offset - size
+            key = keyR[::-1]
+        except:
+            raise
+    if waste is True:
+        keyConfig["nextByte"] = offset
+        with open(keyPath+".yaml", 'w') as keyConfigFile:
+            keyConfigFile.write( yaml.dump(keyConfig, default_flow_style=False))
+    return key

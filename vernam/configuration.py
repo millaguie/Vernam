@@ -42,10 +42,10 @@ def parseConfig(configFromFile, configFromCmd):
     configFromCmd   :  args from command line
     """
     conf = {}
-    if configFromCmd.lz4 is not None:
-        if configFromCmd.lz4 == "encrypt":
+    if configFromCmd.lz4 is True:
+        if configFromCmd.encrypt is True:
             conf["workmode"] = "lz4e"
-        elif configFromCmd.lz4 == "decrypt":
+        elif configFromCmd.decrypt is True:
             conf["workmode"] = "lz4d"
     elif configFromCmd.base32 is True:
         conf["workmode"]="base32"

@@ -41,6 +41,7 @@ def encrypt(inputPath,keyPath,outputPath, force=False, mode="raw"):
     except:
         raise
     size=len(inputfile)
+    print ("MODO: {}, size: {}, clear: {}".format(mode, size, inputfile))
     key, offset, l2r = keymanagement.getKeyBytes(keyPath, size, waste=True)
     key = bytearray(key)
     message.writeMessage(keyPath,outputPath,vernam(inputfile, key), offset,

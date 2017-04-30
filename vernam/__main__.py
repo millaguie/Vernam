@@ -51,14 +51,22 @@ if __name__ == '__main__':
 
     # Read configuration file
     configFromFile = configuration.readConfig(args.config)
+    if args.lz4 is True:
+        mode = "lz4"
+    elif args.base32 is True:
+        mode = "base32"
+    elif args.raw is True:
+        mode = "raw"
+    else:
+        mode = "raw"
 
     # merge configuration from command line and config file
-    config = configuration.parseConfig(configFromFile, args)
+    config = configuration.parseConfig(configFromFile, args, mode)
     print("input file: {}, output file: {}, config file: {}, ".format(
             args.inputfile, args.outputfile, args.config)
             + "key file: {}, operation mode: {}".format(config["keyfile"],
             config["workmode"]))
-
+    print(config["workmode"])
     if args.encrypt is True:
         vernam.encrypt(args.inputfile, config["keyfile"], args.outputfile,
             force=args.force, mode=config["workmode"])

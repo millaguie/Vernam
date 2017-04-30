@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import yaml
+import os
+import sys
 
 def readConfig(config):
     """
@@ -21,6 +23,12 @@ def readConfig(config):
             the sides is doing the maths by hand.
         raw  : default operation mode, will use 1KB pages for ciphering
     """
+    if not os.path.exists(config):
+            sys.stderr.write("Could not find config file, "
+                +"creating a default one\n")
+            configFile = open(config, "w")
+            configFile.write("---\nkeyfile: defaultrawfile.rnd\nworkmode: raw")
+            configFile.close()
     return yaml.load(open(config,'r'))
 
 def parseConfig(configFromFile, configFromCmd):
@@ -34,10 +42,17 @@ def parseConfig(configFromFile, configFromCmd):
     configFromCmd   :  args from command line
     """
     conf = {}
-    if 'encrypt' in locals():
-        conf["mode"] = "encrypt"
+    if configFromCmd.lz4 is True:
+        if configFromCmd.encrypt is True:
+            conf["workmode"] = "lz4e"
+        elif configFromCmd.decrypt is True:
+            conf["workmode"] = "lz4d"
+    elif configFromCmd.base32 is True:
+        conf["workmode"]="base32"
+    elif configFromFile['workmode'] is not None:
+        conf["workmode"]=configFromFile['workmode']
     else:
-        conf["mode"] ="decrypt"
+        conf["workmode"]="raw"
+
     conf["keyfile"] = configFromCmd.keyfile or configFromFile['keyfile']
-    conf["workmode"] = configFromCmd.workmode or configFromFile['workmode']
     return conf

@@ -35,28 +35,28 @@ def readMessage(keyPath, messagePath):
         header = bytearray(unpack(">iiiii", file.read(5*4)))
         if header == L2RHEADER:
             L2R=True
-        elif header ==R2LHEADER:
+        elif header == R2LHEADER:
             L2R=False
+            print("AQUI")
         else:
             raise ValueError("File format unknown")
         msgSize = unpack(">Q",file.read(8))[0]
         offsetInKey = unpack(">Q",file.read(8))
         msgKeyUUID1, msgKeyUUID2 = unpack(">QQ",file.read(16))
-        print(type(msgKeyUUID1))
         msgKeyUUID = (msgKeyUUID1 << 64) | msgKeyUUID2
         if keyUUID.int != msgKeyUUID:
             raise ValueError("Bad Key UUID")
         message = unpack(">{}s".format(msgSize), file.read(msgSize))[0]
-        print(message)
         msgFileHash = file.read()
         if hashSum(message) != msgFileHash.encode("hex"):
             raise ValueError("Failed to hash message ")
+        print("LECTURA -> offset: {}, L2R: {}".format(offsetInKey,L2R) )
         return offsetInKey, L2R, message
 
 
 
 
-def writeMessage(keyPath, messagePath, ciphered, offsetInKey, leftToRigth=True):
+def writeMessage(keyPath, messagePath, ciphered, offsetInKey, l2r=True):
     """
     This function Writes a message in the defined format.
     Format of the message is as follows
@@ -73,19 +73,19 @@ def writeMessage(keyPath, messagePath, ciphered, offsetInKey, leftToRigth=True):
     messagePath : path to the file used to store the message
     ciphered    : ciphered data to write in the file (envelope)
     offsetInKey : need to jump to this byte in key to decrypt
-    leftToRigth : Indicates if the key will need to be readed R2L or L2R (true)
+    l2r         : Indicates if the key will need to be readed R2L or L2R (True)
     """
 
     keyUUID = keymanagement.getCatalogUUID(keyPath)
     msgSize = len(ciphered)
-    print(msgSize)
-    print(ciphered)
+
     with open(messagePath, "wb") as file:
         # Write file header right to left or left to right
-        if leftToRigth is true:
+        if l2r is True:
+            file.write(pack(">iiiii", *L2RHEADER))
+        else:
             file.write(pack(">iiiii", *R2LHEADER))
-        else
-            file.write(pack(">iiiii", *R2LHEADER))
+            offsetInKey = offsetInKey + msgSize
         # Write menssage size in bytes
         file.write(pack(">Q",msgSize))
         # Write offset in key to decrypt message
@@ -94,10 +94,12 @@ def writeMessage(keyPath, messagePath, ciphered, offsetInKey, leftToRigth=True):
         file.write(pack('>QQ', (keyUUID.int >> 64) & max_int64,
                         keyUUID.int & max_int64))
         #write message it's self
+        ciphered = str(ciphered)
         file.write(pack(">{}s".format(msgSize), ciphered))
         # Get hash for the message
         msgHash = hashSum(ciphered)
         msgHashint = msgHash.decode("hex")
         msgHashArray = bytearray(msgHashint)
         hashSize = msgHashArray.count(msgHashArray)
+        print("ESCRITURA -> offset: {}, L2R: {}".format(offsetInKey,l2r) )
         file.write(msgHashArray)

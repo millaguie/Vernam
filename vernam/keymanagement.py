@@ -22,7 +22,7 @@ def getKeyHashFromKey(keyPath):
             buf = f.read(BLOCKSIZE)
     return hasher.hexdigest()
 
-def catalog(keyPath, l2r):
+def catalog(keyPath, l2r, force = False):
     """
     This function catalogs a new keyfile by creating a description yaml file
 
@@ -30,11 +30,12 @@ def catalog(keyPath, l2r):
     -----------
     keyPath : path to the file used as key
     l2r     : True if using left to right key reading
+    force   : Force yaml file overwrite
     """
 
     if not os.path.exists(keyPath):
         sys.exit("Could not find key {}".format(keyPath))
-    if os.path.exists(keyPath+".yaml"):
+    if os.path.exists(keyPath+".yaml") and force is False:
         sys.exit("A description file already exists, won't create a new one")
     genUUID = uuid.uuid4()
     hashSum = getKeyHashFromKey(keyPath)
@@ -117,20 +118,24 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
     """
 
     keySize= os.path.getsize(keyPath)
-    print("keysize: {}".format(keySize))
 
     if offset is not None and offset > keySize:
+        print("offset: {}, keysize: {}".format(offset, keySize))
         sys.exit("key is smaller than key offset")
 
     keyConfig = yaml.load(open(keyPath+".yaml",'r'))
     if offset is None and waste is True:
         offset = keyConfig["nextByte"]
         l2r = keyConfig["l2r"]
+
     elif l2r is None:
         l2r = not keyConfig["l2r"]
 
+    if l2r is True and offset + size >= keySize:
+        sys.exit("Do not have enough unused key to complete this action")
+
     if l2r is False:
-        if offset - size < 0:
+        if offset - size <= 0:
             sys.exit("Do not have enough unused key to complete this action")
         else:
             print ("keysize: {}, offset: {}, size: {}".format(keySize,offset,size))
@@ -142,13 +147,13 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
         else:
             print("{} of {} bytes will be in use after this action".format(
                 offset + size,keySize))
-
+    print ("OFFSET LECTURA: {}".format(offset))
     if l2r is True:
         try:
             inputFile = open(keyPath, 'rb')
             inputFile.seek(offset)
             key=inputFile.read(size)
-            offset = offset + size + 1
+            print("L2R")
         except:
             raise
     else:
@@ -158,10 +163,11 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
             keyR=inputFile.read(size)
             offset = offset - size
             key = keyR[::-1]
+            print("R2L")
         except:
             raise
     if waste is True:
         keyConfig["nextByte"] = offset
         with open(keyPath+".yaml", 'w') as keyConfigFile:
             keyConfigFile.write( yaml.dump(keyConfig, default_flow_style=False))
-    return key
+    return key, offset, l2r

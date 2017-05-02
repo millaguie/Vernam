@@ -3,6 +3,9 @@ import os
 import yaml
 import uuid
 import hashlib
+import ownbase32
+from struct import unpack
+
 
 def getKeyHashFromKey(keyPath):
     """
@@ -171,3 +174,33 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
         with open(keyPath+".yaml", 'w') as keyConfigFile:
             keyConfigFile.write( yaml.dump(keyConfig, default_flow_style=False))
     return key, offset, l2r
+
+def printable2file(keyPath,outputPath,force=False):
+    if os.path.exists(outputPath) and force is False:
+        sys.exit("Will not overwrite output file without force")
+    file = open(outputPath,"w")
+    file.write(printable(keyPath))
+    file.close()
+
+def printable(keyPath):
+    """
+    This function returns a string with the printable version of the key
+    """
+    #ownBase32 = dict.fromkeys(string.ascii_lowercase, 0)
+    if not os.path.exists(keyPath):
+        sys.exit("Could not find key {}".format(keyPath))
+    if not os.path.exists(keyPath+".yaml"):
+        sys.exit("Could not find decriptor for key, please catalog it before")
+    s=str()
+    try:
+        ob32=ownbase32.ownBase32()
+        file = open(keyPath, 'rb')
+        byte =  unpack(">H",file.read(2))[0]
+        while byte:
+            usable = ownbase32.getFromByte(byte)
+            s+="{}{}{}".format(ob32[usable[0]+1],ob32[usable[1]+1],
+                                   ob32[usable[2]+1])
+            byte =  unpack(">h",file.read(2))[0]
+    except:
+        raise
+    return s

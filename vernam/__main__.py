@@ -2,7 +2,9 @@
 import configuration
 import argparse
 import vernam
-from keymanagement import catalog
+import keymanagement
+
+
 
 if __name__ == '__main__':
 
@@ -19,6 +21,10 @@ if __name__ == '__main__':
                         action='store_true', help="Start in decryption mode")
     actionGr.add_argument('--catalog', required=False, action='store_true',
                         help="Catalog a new keyfile")
+    actionGr.add_argument('--printable', required=False, action='store_true',
+                        help="Write to outputfile a printable version of the"+
+                        " key, ready to be used by humans. Warning! this could"+
+                        " be huge.")
 
     # encrypt or decryption can operate in one mode but only one
     modeGr = parser.add_mutually_exclusive_group()
@@ -74,7 +80,9 @@ if __name__ == '__main__':
         vernam.decrypt(args.inputfile, config["keyfile"], args.outputfile,
             force=args.force, mode=config["workmode"])
     elif args.catalog is True:
-        catalog(args.inputfile,args.l2r, force = args.force)
+        keymanagement.catalog(args.inputfile,args.l2r, force = args.force)
+    elif args.printable is True:
+        keymanagement.printable2file(args.inputfile,args.outputfile, force = args.force)
     else:
         parser.error("Don't know what to do, an action (encrypt, decrypt or "+
                     "catalog) is mandatory")

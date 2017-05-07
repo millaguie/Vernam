@@ -1,8 +1,13 @@
+# -*- coding: utf-8 -*-
+
 import sys
 import os
 import yaml
 import uuid
 import hashlib
+import ownbase32
+from struct import unpack
+
 
 def getKeyHashFromKey(keyPath):
     """
@@ -120,7 +125,6 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
     keySize= os.path.getsize(keyPath)
 
     if offset is not None and offset > keySize:
-        print("offset: {}, keysize: {}".format(offset, keySize))
         sys.exit("key is smaller than key offset")
 
     keyConfig = yaml.load(open(keyPath+".yaml",'r'))
@@ -138,7 +142,6 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
         if offset - size <= 0:
             sys.exit("Do not have enough unused key to complete this action")
         else:
-            print ("keysize: {}, offset: {}, size: {}".format(keySize,offset,size))
             print("{} of {} bytes will be in use after this action".format(
                 keySize - (offset - size), keySize))
     else:
@@ -147,13 +150,11 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
         else:
             print("{} of {} bytes will be in use after this action".format(
                 offset + size,keySize))
-    print ("OFFSET LECTURA: {}".format(offset))
     if l2r is True:
         try:
             inputFile = open(keyPath, 'rb')
             inputFile.seek(offset)
             key=inputFile.read(size)
-            print("L2R")
         except:
             raise
     else:
@@ -163,7 +164,6 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
             keyR=inputFile.read(size)
             offset = offset - size
             key = keyR[::-1]
-            print("R2L")
         except:
             raise
     if waste is True:
@@ -171,3 +171,54 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
         with open(keyPath+".yaml", 'w') as keyConfigFile:
             keyConfigFile.write( yaml.dump(keyConfig, default_flow_style=False))
     return key, offset, l2r
+
+def printable2file(keyPath,outputPath,force=False):
+    if os.path.exists(outputPath) and force is False:
+        sys.exit("Will not overwrite output file without force")
+    file = open(outputPath,"w")
+    file.write(printable(keyPath))
+    file.close()
+
+def printable(keyPath):
+    """
+    This function returns a string with the printable version of the key
+    """
+    if not os.path.exists(keyPath):
+        sys.exit("Could not find key {}".format(keyPath))
+    if not os.path.exists(keyPath+".yaml"):
+        sys.exit("Could not find decriptor for key, please catalog it before")
+    s=str()
+    try:
+        ob32=ownbase32.ownBase32()
+        file = open(keyPath, 'rb')
+        byte =  unpack(">H",file.read(2))[0]
+        while byte:
+            usable = ownbase32.getFromByte(byte)
+            s+="{}{}{}".format(ob32[usable[0]+1],ob32[usable[1]+1],
+                                   ob32[usable[2]+1])
+            byte =  unpack(">h",file.read(2))[0]
+    except:
+        raise
+    return s
+
+def ba2humankeyba(ba):
+    """
+    bytearray 2 human mode key bytearray
+    This function converts a key bytearray to a ownbase32 key
+
+     Parameters
+    -----------
+    ba  :   bytearray key to be converted
+    """
+    ob32=ownbase32.ownBase32()
+    keyba = bytearray()
+    size = len(ba)
+    i = 0
+    while i < size:
+        ab = (ba[i]<<8)|ba[2]
+        one, two, three = ownbase32.getFromByte(ab)
+        keyba.append(one)
+        keyba.append(two)
+        keyba.append(three)
+        i+=1
+    return keyba

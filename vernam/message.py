@@ -1,9 +1,13 @@
+# -*- coding: utf-8 -*-
+
 import sys
 import os
 import uuid
 import hashlib
 import keymanagement
 import array
+import yaml
+import ownbase32
 from struct import pack
 from struct import unpack
 from util import hashSum
@@ -53,7 +57,9 @@ def readMessage(keyPath, messagePath):
         print("LECTURA -> offset: {}, L2R: {}".format(offsetInKey,L2R) )
         return offsetInKey, L2R, message
 
-
+def writeHumanMessage(outputPath, message, seek):
+    with open(outputPath, "w") as f:
+        f.write("{}#{}".format(seek,ownbase32.ba2ob32string(message)))
 
 
 def writeMessage(keyPath, messagePath, ciphered, offsetInKey, l2r=True):

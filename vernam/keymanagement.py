@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sys
 import os
 import yaml
@@ -123,7 +125,6 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
     keySize= os.path.getsize(keyPath)
 
     if offset is not None and offset > keySize:
-        print("offset: {}, keysize: {}".format(offset, keySize))
         sys.exit("key is smaller than key offset")
 
     keyConfig = yaml.load(open(keyPath+".yaml",'r'))
@@ -141,7 +142,6 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
         if offset - size <= 0:
             sys.exit("Do not have enough unused key to complete this action")
         else:
-            print ("keysize: {}, offset: {}, size: {}".format(keySize,offset,size))
             print("{} of {} bytes will be in use after this action".format(
                 keySize - (offset - size), keySize))
     else:
@@ -150,13 +150,11 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
         else:
             print("{} of {} bytes will be in use after this action".format(
                 offset + size,keySize))
-    print ("OFFSET LECTURA: {}".format(offset))
     if l2r is True:
         try:
             inputFile = open(keyPath, 'rb')
             inputFile.seek(offset)
             key=inputFile.read(size)
-            print("L2R")
         except:
             raise
     else:
@@ -166,7 +164,6 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
             keyR=inputFile.read(size)
             offset = offset - size
             key = keyR[::-1]
-            print("R2L")
         except:
             raise
     if waste is True:
@@ -186,7 +183,6 @@ def printable(keyPath):
     """
     This function returns a string with the printable version of the key
     """
-    #ownBase32 = dict.fromkeys(string.ascii_lowercase, 0)
     if not os.path.exists(keyPath):
         sys.exit("Could not find key {}".format(keyPath))
     if not os.path.exists(keyPath+".yaml"):
@@ -204,3 +200,25 @@ def printable(keyPath):
     except:
         raise
     return s
+
+def ba2humankeyba(ba):
+    """
+    bytearray 2 human mode key bytearray
+    This function converts a key bytearray to a ownbase32 key
+
+     Parameters
+    -----------
+    ba  :   bytearray key to be converted
+    """
+    ob32=ownbase32.ownBase32()
+    keyba = bytearray()
+    size = len(ba)
+    i = 0
+    while i < size:
+        ab = (ba[i]<<8)|ba[2]
+        one, two, three = ownbase32.getFromByte(ab)
+        keyba.append(one)
+        keyba.append(two)
+        keyba.append(three)
+        i+=1
+    return keyba

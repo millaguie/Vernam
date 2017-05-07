@@ -5,6 +5,8 @@ from lz4 import compressHC, uncompress
 import tempfile
 import keymanagement
 import message
+import math
+import ownbase32
 
 
 def encrypt(inputPath,keyPath,outputPath, force=False, mode="raw"):
@@ -19,9 +21,8 @@ def encrypt(inputPath,keyPath,outputPath, force=False, mode="raw"):
     outputPath : path to the file used as output
     mode       : working mode, Modes are:
         * raw: traditional way
-        * lz4e: all input data will be compressed via lz4
-        * lz4d: all output data will be decompress via lz4
-        * base32: all data will be converted to base32 beforehand
+        * lz4: all input data will be compressed via lz4
+        * human: all data will be converted to ownBase32 beforehand
     """
     if not os.path.exists(inputPath):
         sys.exit("Could not find input file {}".format(inputPath))
@@ -36,18 +37,32 @@ def encrypt(inputPath,keyPath,outputPath, force=False, mode="raw"):
     try:
         if mode == "lz4":
             inputfile=bytearray(compressHC((open(inputPath, 'rb')).read()))
+        elif mode == "human":
+            inputfile=ownbase32.string2ownBase32(open(inputPath,'rb').read())
         else:
             inputfile=bytearray(open(inputPath, 'rb').read())
     except:
         raise
-    size=len(inputfile)
-    print ("MODO: {}, size: {}, clear: {}".format(mode, size, inputfile))
+    if mode == "human":
+        # An even number of bytes is needed for tranformation.
+        size =  int(math.ceil(((len(inputfile) / 3)/2.)) * 2)
+    else:
+        size = len(inputfile)
+
     key, offset, l2r = keymanagement.getKeyBytes(keyPath, size, waste=True)
     key = bytearray(key)
-    message.writeMessage(keyPath,outputPath,vernam(inputfile, key), offset,
+    if mode == "human":
+        key = keymanagement.ba2humankeyba(key)
+        if len(key) != len(inputfile):
+            key = key[:len(inputfile)-len(key)]
+        inputfile = ownbase32.string2ob32ba(inputfile)
+        ciphered = vernam(inputfile,key)
+        message.writeHumanMessage(outputPath,ciphered,offset)
+    else:
+        message.writeMessage(keyPath,outputPath,vernam(inputfile, key), offset,
                         l2r=l2r)
 
-def decrypt(inputPath,keyPath,outputPath, force=False, mode="raw"):
+def decrypt(inputPath,keyPath,outputPath, force=False, mode="raw", seek = None):
     """
     This function performs vernam decryption using an input file and a key,
     result is stored in output file.
@@ -59,9 +74,9 @@ def decrypt(inputPath,keyPath,outputPath, force=False, mode="raw"):
     outputPath : path to the file used as output
     mode       : working mode, Modes are:
         * raw: traditional way
-        * lz4e: all input data will be compressed via lz4
-        * lz4d: all output data will be decompress via lz4
-        * base32: all data will be converted to base32 beforehand
+        * lz4: all input data will be decompressed via lz4
+        * human: all data will be converted to ownBase32 beforehand
+    seek       : offset to key in human mode
     """
     if not os.path.exists(inputPath):
         sys.exit("Could not find input file {}".format(inputPath))
@@ -93,7 +108,7 @@ def vernam(one, two):
     ----------
     one, two : Two arraybytes to perform vernam cipher.
     """
-    if len(one) is not len(two):
+    if len(one) != len(two):
         sys.exit("arraybytes length differs, can not vernam with them")
     size=len(one)
     outputfile = bytearray(size)

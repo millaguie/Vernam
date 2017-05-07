@@ -85,13 +85,27 @@ def decrypt(inputPath,keyPath,outputPath, force=False, mode="raw"):
                                                             outputPath))
         else:
             sys.stderr.write("Output file will be overwritten as requested.\n")
-    offset, l2r, inputCryp = message.readMessage(keyPath,inputPath)
-    size=len(inputCryp)
-    offset=offset[0]
+    if mode == "human":
+        seek,inputCryp = message.readHumanMessage(inputPath)
+        offset = seek / 3
+        size = int(math.ceil(((len(inputCryp) / 3)/2.)) * 2)
+        l2r = True
+    else:
+        offset, l2r, inputCryp = message.readMessage(keyPath,inputPath)
+        offset=offset[0]
+        size=len(inputCryp)
     print("offset: {} - {}, l2r: {}".format(offset,type(offset), l2r))
     key = keymanagement.getKeyBytes(keyPath, size, offset=offset, l2r=l2r)
     key=bytearray(key[0])
-    clear = vernam(bytearray(inputCryp),key)
+    if mode == "human":
+        key = keymanagement.ba2humankeyba(key)
+        if len(key) != len(inputCryp):
+            key = key[:len(inputCryp)-len(key)]
+        inputCryp = ownbase32.string2ob32ba(inputCryp)
+        clear = ownbase32.ba2ob32string(vernam(inputCryp,key))
+        print(clear)
+    else:
+        clear = vernam(bytearray(inputCryp),key)
     if mode == "lz4":
         clear=uncompress(str(clear))
     open(outputPath, 'wb').write(clear)

@@ -48,6 +48,8 @@ def parseConfig(configFromFile, configFromCmd, mode="raw"):
         print("mode lz4")
     elif mode is "base32":
         conf["workmode"]="base32"
+    elif mode is "human":
+        conf["workmode"]="human"
     elif configFromFile['workmode'] is not None:
         conf["workmode"]=configFromFile['workmode']
     else:

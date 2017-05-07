@@ -54,9 +54,6 @@ if __name__ == '__main__':
     parser.add_argument("--l2r", action='store_true', default=False,
                         help="When catalogging a key, select read mode right "+
                         "to left, by default will use left to right")
-    parser.add_argument("--seek", required=False,
-                        help="In human mode, where to start reading key. Note:"+
-                        "In human mode key will be read left to right always")
     args = parser.parse_args()
 
 
@@ -69,11 +66,7 @@ if __name__ == '__main__':
     elif args.raw is True:
         mode = "raw"
     elif args.human is True:
-        if args.seek is None and args.decrypt is True:
-            parser.error("--seek is mandatory while decrypting in human mode")
-            print args
-        else:
-            mode = "human"
+        mode = "human"
     else:
         mode = "raw"
 

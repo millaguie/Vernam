@@ -62,7 +62,7 @@ def encrypt(inputPath,keyPath,outputPath, force=False, mode="raw"):
         message.writeMessage(keyPath,outputPath,vernam(inputfile, key), offset,
                         l2r=l2r)
 
-def decrypt(inputPath,keyPath,outputPath, force=False, mode="raw", seek = None):
+def decrypt(inputPath,keyPath,outputPath, force=False, mode="raw"):
     """
     This function performs vernam decryption using an input file and a key,
     result is stored in output file.
@@ -76,7 +76,6 @@ def decrypt(inputPath,keyPath,outputPath, force=False, mode="raw", seek = None):
         * raw: traditional way
         * lz4: all input data will be decompressed via lz4
         * human: all data will be converted to ownBase32 beforehand
-    seek       : offset to key in human mode
     """
     if not os.path.exists(inputPath):
         sys.exit("Could not find input file {}".format(inputPath))

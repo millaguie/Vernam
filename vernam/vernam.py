@@ -57,7 +57,7 @@ def encrypt(inputPath,keyPath,outputPath, force=False, mode="raw"):
             key = key[:len(inputfile)-len(key)]
         inputfile = ownbase32.string2ob32ba(inputfile)
         ciphered = vernam(inputfile,key)
-        message.writeHumanMessage(outputPath,ciphered,offset)
+        message.writeHumanMessage(outputPath,ciphered,offset * 3)
     else:
         message.writeMessage(keyPath,outputPath,vernam(inputfile, key), offset,
                         l2r=l2r)

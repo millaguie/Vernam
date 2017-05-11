@@ -90,4 +90,4 @@ if __name__ == '__main__':
     else:
         parser.error("Don't know what to do, an action (encrypt, decrypt or "+
                     "catalog) is mandatory")
-        print args
+        print (args)

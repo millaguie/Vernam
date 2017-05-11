@@ -12,12 +12,8 @@ from struct import pack
 from struct import unpack
 from util import hashSum
 
-global L2RHEADER
 L2RHEADER = bytearray([222, 210, 7, 163, 100]);
-global R2LHEADER
 R2LHEADER = bytearray([222, 210, 7, 163, 101]);
-global max_int64
-max_int64 = 0xFFFFFFFFFFFFFFFF
 
 
 
@@ -93,6 +89,7 @@ def writeMessage(keyPath, messagePath, ciphered, offsetInKey, l2r=True):
     msgSize = len(ciphered)
 
     with open(messagePath, "wb") as file:
+        max_int64 = 0xFFFFFFFFFFFFFFFF
         # Write file header right to left or left to right
         if l2r is True:
             file.write(pack(">iiiii", *L2RHEADER))

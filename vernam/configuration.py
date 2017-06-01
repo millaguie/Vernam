@@ -15,7 +15,7 @@ def readConfig(config):
     ----------
     keyfile (-k) : str, path to a file containing the random data used as key
         for the cipher.
-    workmode (-m) :  You can choose one of the following methods:
+    workmode     :  You can choose one of the following methods:
         lz4 : Will compress input or decompres output with lz4, this has a great
             performance with all file types.
         base32 : Old style. key will be read as 4 bits blocks, input and output
@@ -31,7 +31,7 @@ def readConfig(config):
             configFile.close()
     return yaml.load(open(config,'r'))
 
-def parseConfig(configFromFile, configFromCmd):
+def parseConfig(configFromFile, configFromCmd, mode="raw"):
     """
     This fuction merges configuration from config file and configuration from
     command line. Command line options have preference over config file.
@@ -40,15 +40,16 @@ def parseConfig(configFromFile, configFromCmd):
     -----------
     configFromFile  :  returned from readConfig functions
     configFromCmd   :  args from command line
+    mode            :  parse mode option
     """
     conf = {}
-    if configFromCmd.lz4 is True:
-        if configFromCmd.encrypt is True:
-            conf["workmode"] = "lz4e"
-        elif configFromCmd.decrypt is True:
-            conf["workmode"] = "lz4d"
-    elif configFromCmd.base32 is True:
+    if mode is "lz4":
+        conf["workmode"] = "lz4"
+        print("mode lz4")
+    elif mode is "base32":
         conf["workmode"]="base32"
+    elif mode is "human":
+        conf["workmode"]="human"
     elif configFromFile['workmode'] is not None:
         conf["workmode"]=configFromFile['workmode']
     else:

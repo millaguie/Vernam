@@ -1,19 +1,19 @@
+# -*- coding: utf-8 -*-
+
 import sys
 import os
 import uuid
 import hashlib
 import keymanagement
 import array
+import yaml
+import ownbase32
 from struct import pack
 from struct import unpack
 from util import hashSum
 
-global L2RHEADER
-L2RHEADER = bytearray([222, 210, 7, 163, 100]);
-global R2LHEADER
-R2LHEADER = bytearray([222, 210, 7, 163, 101]);
-global max_int64
-max_int64 = 0xFFFFFFFFFFFFFFFF
+L2RHEADER = bytearray([222, 210, 7, 163, 100])
+R2LHEADER = bytearray([222, 210, 7, 163, 101])
 
 
 
@@ -53,6 +53,15 @@ def readMessage(keyPath, messagePath):
         print("LECTURA -> offset: {}, L2R: {}".format(offsetInKey,L2R) )
         return offsetInKey, L2R, message
 
+def writeHumanMessage(outputPath, message, seek):
+    with open(outputPath, "w") as f:
+        f.write("{}#{}".format(seek,ownbase32.ba2ob32string(message)))
+
+def readHumanMessage(inputPath):
+    with open(inputPath, "r") as f:
+        s = f.read()
+    s = s.split("#")
+    return int(s[0]), s[1]
 
 
 
@@ -80,6 +89,7 @@ def writeMessage(keyPath, messagePath, ciphered, offsetInKey, l2r=True):
     msgSize = len(ciphered)
 
     with open(messagePath, "wb") as file:
+        max_int64 = 0xFFFFFFFFFFFFFFFF
         # Write file header right to left or left to right
         if l2r is True:
             file.write(pack(">iiiii", *L2RHEADER))

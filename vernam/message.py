@@ -12,8 +12,8 @@ from struct import pack
 from struct import unpack
 from util import hashSum
 
-L2RHEADER = bytearray([222, 210, 7, 163, 100]);
-R2LHEADER = bytearray([222, 210, 7, 163, 101]);
+L2RHEADER = bytearray([222, 210, 7, 163, 100])
+R2LHEADER = bytearray([222, 210, 7, 163, 101])
 
 
 

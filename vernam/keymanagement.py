@@ -5,11 +5,11 @@ Keymanagement class holds all logic for key management
 
 import sys
 import os
-import yaml
 import uuid
 import hashlib
-import ownbase32
 from struct import unpack
+import yaml
+import ownbase32
 
 
 def getKeyHashFromKey(keyPath):
@@ -85,10 +85,7 @@ def checkCatalogUUID(keyPath, binaryUUID=None, asciiUUID=None):
         messageUUID = uuid.UUID(binaryUUID)
     else:
         return False
-    if messageUUID.int == confUUID.int:
-        return True
-    else:
-        return False
+    return (messageUUID.int == confUUID.int)
 
 def getCatalogUUID(keyPath):
     """
@@ -199,7 +196,7 @@ def printable(keyPath):
             usable = ownbase32.getFromByte(byte)
             s+="{}{}{}".format(ob32[usable[0]+1], ob32[usable[1]+1],
                                ob32[usable[2]+1])
-            byte = unpack(">h",file.read(2))[0]
+            byte = unpack(">h", file.read(2))[0]
     except:
         raise
     return s

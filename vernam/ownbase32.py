@@ -114,6 +114,6 @@ def ba2ob32string(ba):
 
     s = ""
     for b in ba:
-        s+ = ob32[b]
+        s+=ob32[b]
 
     return s

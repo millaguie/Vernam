@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
-import yaml
+"""
+This class is intended for configuration management
+"""
 import os
 import sys
+import yaml
 
 def readConfig(config):
     """
@@ -24,12 +27,12 @@ def readConfig(config):
         raw  : default operation mode, will use 1KB pages for ciphering
     """
     if not os.path.exists(config):
-            sys.stderr.write("Could not find config file, "
-                +"creating a default one\n")
-            configFile = open(config, "w")
-            configFile.write("---\nkeyfile: defaultrawfile.rnd\nworkmode: raw")
-            configFile.close()
-    return yaml.load(open(config,'r'))
+        sys.stderr.write("Could not find config file, "
+                         +"creating a default one\n")
+        configFile = open(config, "w")
+        configFile.write("---\nkeyfile: defaultrawfile.rnd\nworkmode: raw")
+        configFile.close()
+    return yaml.load(open(config, 'r'))
 
 def parseConfig(configFromFile, configFromCmd, mode="raw"):
     """
@@ -47,13 +50,13 @@ def parseConfig(configFromFile, configFromCmd, mode="raw"):
         conf["workmode"] = "lz4"
         print("mode lz4")
     elif mode is "base32":
-        conf["workmode"]="base32"
+        conf["workmode"] = "base32"
     elif mode is "human":
-        conf["workmode"]="human"
+        conf["workmode"] = "human"
     elif configFromFile['workmode'] is not None:
-        conf["workmode"]=configFromFile['workmode']
+        conf["workmode"] = configFromFile['workmode']
     else:
-        conf["workmode"]="raw"
+        conf["workmode"] = "raw"
 
     conf["keyfile"] = configFromCmd.keyfile or configFromFile['keyfile']
     return conf

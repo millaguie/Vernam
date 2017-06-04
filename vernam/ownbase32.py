@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
+"""
+ownbase class handles all ownbase encoding, decoding and utilities
+related to ownbase alphabet
+"""
 
 import string
+
 def ownBase32():
     """
     This function just return the ownBase32 alphabet
     """
-    oB32 =  {i:x for i, x in enumerate(string.ascii_lowercase, 0)}
+    oB32 = {i:x for i, x in enumerate(string.ascii_lowercase, 0)}
     # Like in old typewriters, l will work as 1 and o will work as 0
     # because of little name space z will work as 2
     oB32[26] = "3"
@@ -27,7 +32,7 @@ def string2ownBase32(characters):
     characters  : String to convert
     """
     oB32 = ownBase32()
-    inBase32=str()
+    inBase32 = str()
     for c in characters.lower():
         if c is "1":
             c = "l"
@@ -44,7 +49,7 @@ def string2ownBase32(characters):
         if c in oB32.values():
             c = oB32.values().index(c)
         else:
-            print("{} is not an ob32 printable, using space as {}".format(c,c))
+            print("{} is not an ob32 printable, using space as {}".format(c, c))
             c = 31
         inBase32 += oB32[c]
     return inBase32
@@ -62,10 +67,10 @@ def getFromByte(twobytes):
     -----------
     data  : binary raw data
     """
-    one = int('{:016b}'.format(twobytes)[1:6],2)
-    two = int('{:016b}'.format(twobytes)[6:11],2)
-    three = int('{:016b}'.format(twobytes)[11:16],2)
-    return one,two,three
+    one = int('{:016b}'.format(twobytes)[1:6], 2)
+    two = int('{:016b}'.format(twobytes)[6:11], 2)
+    three = int('{:016b}'.format(twobytes)[11:16], 2)
+    return one, two, three
 
 def char2pos(c):
     """

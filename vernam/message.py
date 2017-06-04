@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
-
+"""
+Message class holds all methods to work with message files
+"""
 import sys
 import os
+import array
+from struct import pack
+from struct import unpack
 import uuid
 import hashlib
 import keymanagement
-import array
 import yaml
 import ownbase32
-from struct import pack
-from struct import unpack
 from util import hashSum
 
 L2RHEADER = bytearray([222, 210, 7, 163, 100])
@@ -34,15 +36,15 @@ def readMessage(keyPath, messagePath):
     with open(messagePath, "rb") as file:
         header = bytearray(unpack(">iiiii", file.read(5*4)))
         if header == L2RHEADER:
-            L2R=True
+            L2R = True
         elif header == R2LHEADER:
-            L2R=False
+            L2R = False
             print("AQUI")
         else:
             raise ValueError("File format unknown")
-        msgSize = unpack(">Q",file.read(8))[0]
-        offsetInKey = unpack(">Q",file.read(8))
-        msgKeyUUID1, msgKeyUUID2 = unpack(">QQ",file.read(16))
+        msgSize = unpack(">Q", file.read(8))[0]
+        offsetInKey = unpack(">Q", file.read(8))
+        msgKeyUUID1, msgKeyUUID2 = unpack(">QQ", file.read(16))
         msgKeyUUID = (msgKeyUUID1 << 64) | msgKeyUUID2
         if keyUUID.int != msgKeyUUID:
             raise ValueError("Bad Key UUID")
@@ -50,14 +52,35 @@ def readMessage(keyPath, messagePath):
         msgFileHash = file.read()
         if hashSum(message) != msgFileHash.encode("hex"):
             raise ValueError("Failed to hash message ")
-        print("LECTURA -> offset: {}, L2R: {}".format(offsetInKey,L2R) )
+        print("LECTURA -> offset: {}, L2R: {}".format(offsetInKey, L2R))
         return offsetInKey, L2R, message
 
 def writeHumanMessage(outputPath, message, seek):
+    """
+    This function writes a message in the human friendly format.
+    Format of the message is as follows:
+    
+    offset#message
+    
+     Parameters
+    -----------
+    outputPath  : path to the new message file
+    message     : message to write in the file
+    seek        : offset in key to decrypt message
+
+    """
     with open(outputPath, "w") as f:
-        f.write("{}#{}".format(seek,ownbase32.ba2ob32string(message)))
+        f.write("{}#{}".format(seek, ownbase32.ba2ob32string(message)))
 
 def readHumanMessage(inputPath):
+    """
+    This function reads a message in the human friendly format.
+    Function will return two elements, key offset and the
+    encrypted message.
+     Parameter
+    ----------
+    inputPath   : path to the message file to read
+    """
     with open(inputPath, "r") as f:
         s = f.read()
     s = s.split("#")
@@ -97,9 +120,9 @@ def writeMessage(keyPath, messagePath, ciphered, offsetInKey, l2r=True):
             file.write(pack(">iiiii", *R2LHEADER))
             offsetInKey = offsetInKey + msgSize
         # Write menssage size in bytes
-        file.write(pack(">Q",msgSize))
+        file.write(pack(">Q", msgSize))
         # Write offset in key to decrypt message
-        file.write(pack(">Q",offsetInKey))
+        file.write(pack(">Q", offsetInKey))
         # Write Key UUID for easy key management
         file.write(pack('>QQ', (keyUUID.int >> 64) & max_int64,
                         keyUUID.int & max_int64))
@@ -111,5 +134,5 @@ def writeMessage(keyPath, messagePath, ciphered, offsetInKey, l2r=True):
         msgHashint = msgHash.decode("hex")
         msgHashArray = bytearray(msgHashint)
         hashSize = msgHashArray.count(msgHashArray)
-        print("ESCRITURA -> offset: {}, L2R: {}".format(offsetInKey,l2r) )
+        print("ESCRITURA -> offset: {}, L2R: {}".format(offsetInKey, l2r) )
         file.write(msgHashArray)

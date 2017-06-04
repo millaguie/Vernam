@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+Util class handles all unspecific utilities
+"""
 
 import hashlib
 

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vernam</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;vernam
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vernam-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PACKAGE DESCRIPTION ==================== -->
+<h1 class="epydoc">Package vernam</h1><p class="nomargin-top"><span class="codelink"><a href="vernam-pysrc.html">source&nbsp;code</a></span></p>
+<p>Here is a Vernam cipher implementation in python. My goal with this 
+  project is achive my degree in CS ;) but also create a optimized way to 
+  use Vernam cipher in the real world(TM).</p>
+  <p>This implementation rely on a huge file filled with real random data 
+  shared with another person. For example Alice and Bob (original me).</p>
+  <p>Alice will be our creator, the person who created the huge file and 
+  Bob will be the consumer. It's important to identify this two roles, 
+  because the use of the key file (that huge random generated file) will be
+  different for each user.</p>
+  <p>Creator will use the file from the beggining to the end, meanwhile 
+  consumer will do it in reverse, from the end to the beggining. This is 
+  the way create a bidirectional commmuncation with only a file. As key 
+  data availability (last consumer minus last creator position used) drops 
+  under a certain thresold, software will alert you to meet your fella and 
+  interchange a new key file, and to prevent you to reuse key file. As soon
+  the key is reused, software will alert you, so if this happend it's on 
+  your own. If this happend it's pretty difficult to break the whole 
+  message but, an interceptor can start to work.</p>
+
+<!-- ==================== SUBMODULES ==================== -->
+<a name="section-Submodules"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Submodules</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Submodules"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr><td class="summary">
+  <ul class="nomargin">
+    <li class="private"> <strong class="uidlink"><a href="vernam.__main__-module.html">vernam.__main__</a></strong>: <em class="summary">This is the main file of vernam encryption.</em>    </li>
+    <li> <strong class="uidlink"><a href="vernam.configuration-module.html">vernam.configuration</a></strong>: <em class="summary">This class is intended for configuration management</em>    </li>
+    <li> <strong class="uidlink"><a href="vernam.keymanagement-module.html">vernam.keymanagement</a></strong>: <em class="summary">Keymanagement class holds all logic for key management</em>    </li>
+    <li> <strong class="uidlink"><a href="vernam.message-module.html">vernam.message</a></strong>: <em class="summary">Message class holds all methods to work with message files</em>    </li>
+    <li> <strong class="uidlink"><a href="vernam.ownbase32-module.html">vernam.ownbase32</a></strong>: <em class="summary">ownbase class handles all ownbase encoding, decoding and utilities 
+        related to ownbase alphabet</em>    </li>
+    <li> <strong class="uidlink"><a href="vernam.test_configuration-module.html">vernam.test_configuration</a></strong>    </li>
+    <li> <strong class="uidlink"><a href="vernam.test_keymanagement-module.html">vernam.test_keymanagement</a></strong>    </li>
+    <li> <strong class="uidlink"><a href="vernam.test_message-module.html">vernam.test_message</a></strong>    </li>
+    <li> <strong class="uidlink"><a href="vernam.test_util-module.html">vernam.test_util</a></strong>    </li>
+    <li> <strong class="uidlink"><a href="vernam.util-module.html">vernam.util</a></strong>: <em class="summary">Util class handles all unspecific utilities</em>    </li>
+    <li> <strong class="uidlink"><a href="vernam.vernam-module.html">vernam.vernam</a></strong>: <em class="summary">This is the core class form verna encryption.</em>    </li>
+  </ul></td></tr>
+</table>
+
+<br />
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="None">None</code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sun Jun  4 15:54:27 2017
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

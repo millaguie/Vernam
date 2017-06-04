@@ -8,9 +8,9 @@ import os
 import math
 from lz4 import compressHC, uncompress
 import tempfile
-import vernam.keymanagement
-import vernam.message
-import vernam.ownbase32
+import keymanagement
+import message
+import ownbase32
 
 
 def encrypt(inputPath, keyPath, outputPath, force=False, mode="raw"):

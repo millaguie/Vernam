@@ -54,10 +54,31 @@ def readMessage(keyPath, messagePath):
         return offsetInKey, L2R, message
 
 def writeHumanMessage(outputPath, message, seek):
+    """
+    This function writes a message in the human friendly format.
+    Format of the message is as follows:
+    
+    offset#message
+    
+     Parameters
+    -----------
+    outputPath  : path to the new message file
+    message     : message to write in the file
+    seek        : offset in key to decrypt message
+
+    """
     with open(outputPath, "w") as f:
         f.write("{}#{}".format(seek,ownbase32.ba2ob32string(message)))
 
 def readHumanMessage(inputPath):
+    """
+    This function reads a message in the human friendly format.
+    Function will return two elements, key offset and the 
+    encrypted message.
+     Parameter
+    ----------
+    inputPath   : path to the message file to read
+    """
     with open(inputPath, "r") as f:
         s = f.read()
     s = s.split("#")

@@ -1,21 +1,26 @@
 # -*- coding: utf-8 -*-
+"""
+Keymanagement module holds all logic for key management
+"""
 
 import sys
 import os
-import yaml
 import uuid
 import hashlib
-import ownbase32
 from struct import unpack
+import yaml
+import ownbase32
 
 
 def getKeyHashFromKey(keyPath):
     """
     This function get the hashcode for the key, it returns a hash.
 
-     parameters
-    -----------
-    keyPath : path to the file used as key
+    Args:
+        * keyPath: path to the file used as key
+
+    Returns:
+        Key's hash in hexdigest format.
     """
     print("Generating hash of key, this might take some time")
     BLOCKSIZE = 65536
@@ -27,15 +32,17 @@ def getKeyHashFromKey(keyPath):
             buf = f.read(BLOCKSIZE)
     return hasher.hexdigest()
 
-def catalog(keyPath, l2r, force = False):
+def catalog(keyPath, l2r, force=False):
     """
     This function catalogs a new keyfile by creating a description yaml file
 
-     Parameters
-    -----------
-    keyPath : path to the file used as key
-    l2r     : True if using left to right key reading
-    force   : Force yaml file overwrite
+    Args:
+        * keyPath: path to the file used as key
+        * l2r: True if using left to right key reading
+        * force: Force yaml file overwrite
+
+    Returns:
+        None
     """
 
     if not os.path.exists(keyPath):
@@ -51,22 +58,24 @@ def catalog(keyPath, l2r, force = False):
     configFile = open(keyPath+".yaml", "w")
     fileName = os.path.basename(keyPath)
     configFile.write("---\n"+
-                    "keyfile: {}\n".format(fileName) +
-                    "UUID: {}\n".format(str(genUUID)) +
-                    "sha512: {}\n".format(hashSum) +
-                    "l2r: {}\n".format(l2r) +
-                    "nextByte: {}".format(startByte)
+                     "keyfile: {}\n".format(fileName) +
+                     "UUID: {}\n".format(str(genUUID)) +
+                     "sha512: {}\n".format(hashSum) +
+                     "l2r: {}\n".format(l2r) +
+                     "nextByte: {}".format(startByte)
                     )
 
 def checkCatalogUUID(keyPath, binaryUUID=None, asciiUUID=None):
     """
     Function to check key UUID and UUID used in message, returns True or False
 
-     Parameters
-    -----------
-    keyPath     : path to the file used as key
-    binaryUUID  : optional, message UUID in binary format
-    asciiUUID   : optional, message UUID in string format
+    Args:
+        * keyPath: path to the file used as key
+        * binaryUUID: optional, message UUID in binary format
+        * asciiUUID: optional, message UUID in string format
+
+    Returns:
+        True if match false elsewhere
     """
     if not os.path.exists(keyPath):
         sys.exit("Could not find key {}".format(keyPath))
@@ -74,7 +83,7 @@ def checkCatalogUUID(keyPath, binaryUUID=None, asciiUUID=None):
         sys.exit("Could not find decriptor for key, please catalog it before")
 
     keyConfig = {}
-    keyConfig = yaml.load(open(keyPath+".yaml",'r'))
+    keyConfig = yaml.load(open(keyPath+".yaml", 'r'))
     confUUID = uuid.UUID("urn:uuid:"+keyConfig["UUID"])
     if asciiUUID is not None:
         messageUUID = uuid.UUID(asciiUUID)
@@ -82,19 +91,17 @@ def checkCatalogUUID(keyPath, binaryUUID=None, asciiUUID=None):
         messageUUID = uuid.UUID(binaryUUID)
     else:
         return False
-    if messageUUID.int == confUUID.int:
-        return True
-    else:
-        return False
+    return (messageUUID.int == confUUID.int)
 
 def getCatalogUUID(keyPath):
     """
     Function to get UUID from key config file, returns an UUID object.
 
-     Parameters
-    -----------
-    keyPath     : path to the file used as key
+    Args:
+        * keyPath: path to the file used as key
 
+    Returns:
+        An UUID object with key's UUID
     """
 
     if not os.path.exists(keyPath):
@@ -103,7 +110,7 @@ def getCatalogUUID(keyPath):
         sys.exit("Could not find decriptor for key, please catalog it before")
 
     keyConfig = {}
-    keyConfig = yaml.load(open(keyPath+".yaml",'r'))
+    keyConfig = yaml.load(open(keyPath+".yaml", 'r'))
     return uuid.UUID("urn:uuid:"+keyConfig["UUID"])
 
 def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
@@ -113,21 +120,23 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
     readebytes as used into key yaml file, when using waste offset may not be
     set, as we will start in the last byte used.
 
-     Parameters
-    -----------
-    keyPath : path to the file used as key
-    size    : size in bytes to read
-    l2r     : True if using left to right key reading
-    offset  : where in key start to read
-    waste   : Mark read bytes as used and update key config
+    Args:
+        * keyPath: path to the file used as key
+        * size: size in bytes to read
+        * l2r: True if using left to right key reading
+        * offset: where in key start to read
+        * waste: Mark read bytes as used and update key config
+
+    Returns:
+        A byte array with the portion of the key
     """
 
-    keySize= os.path.getsize(keyPath)
+    keySize = os.path.getsize(keyPath)
 
     if offset is not None and offset > keySize:
         sys.exit("key is smaller than key offset")
 
-    keyConfig = yaml.load(open(keyPath+".yaml",'r'))
+    keyConfig = yaml.load(open(keyPath+".yaml", 'r'))
     if offset is None and waste is True:
         offset = keyConfig["nextByte"]
         l2r = keyConfig["l2r"]
@@ -149,19 +158,19 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
             sys.exit("Do not have enough unused key to complete this action")
         else:
             print("{} of {} bytes will be in use after this action".format(
-                offset + size,keySize))
+                offset + size, keySize))
     if l2r is True:
         try:
             inputFile = open(keyPath, 'rb')
             inputFile.seek(offset)
-            key=inputFile.read(size)
+            key = inputFile.read(size)
         except:
             raise
     else:
         try:
             inputFile = open(keyPath, 'rb')
             inputFile.seek(offset - size)
-            keyR=inputFile.read(size)
+            keyR = inputFile.read(size)
             offset = offset - size
             key = keyR[::-1]
         except:
@@ -169,34 +178,52 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
     if waste is True:
         keyConfig["nextByte"] = offset
         with open(keyPath+".yaml", 'w') as keyConfigFile:
-            keyConfigFile.write( yaml.dump(keyConfig, default_flow_style=False))
+            keyConfigFile.write(yaml.dump(keyConfig, default_flow_style=False))
     return key, offset, l2r
 
-def printable2file(keyPath,outputPath,force=False):
+def printable2file(keyPath, outputPath, force=False):
+    """
+    This function performs conversion from a raw binary key file to an
+    ownbase32 and save it in a file
+
+    Args:
+        * keyPath: path to the file used as key
+        * outputPath: path to the generated file
+        * force: Overwrite if outputPath exists
+
+    Returns:
+        None
+    """
     if os.path.exists(outputPath) and force is False:
         sys.exit("Will not overwrite output file without force")
-    file = open(outputPath,"w")
+    file = open(outputPath, "w")
     file.write(printable(keyPath))
     file.close()
 
 def printable(keyPath):
     """
     This function returns a string with the printable version of the key
+
+    Args:
+        * keyPath: path to the file used as key
+
+    Returns:
+        a string with ownBase32 version of the key
     """
     if not os.path.exists(keyPath):
         sys.exit("Could not find key {}".format(keyPath))
     if not os.path.exists(keyPath+".yaml"):
         sys.exit("Could not find decriptor for key, please catalog it before")
-    s=str()
+    s = str()
     try:
-        ob32=ownbase32.ownBase32()
+        ob32 = ownbase32.ownBase32()
         file = open(keyPath, 'rb')
-        byte =  unpack(">H",file.read(2))[0]
+        byte = unpack(">H", file.read(2))[0]
         while byte:
             usable = ownbase32.getFromByte(byte)
-            s+="{}{}{}".format(ob32[usable[0]+1],ob32[usable[1]+1],
-                                   ob32[usable[2]+1])
-            byte =  unpack(">h",file.read(2))[0]
+            s+="{}{}{}".format(ob32[usable[0]+1], ob32[usable[1]+1],
+                               ob32[usable[2]+1])
+            byte = unpack(">h", file.read(2))[0]
     except:
         raise
     return s
@@ -206,11 +233,13 @@ def ba2humankeyba(ba):
     bytearray 2 human mode key bytearray
     This function converts a key bytearray to a ownbase32 key
 
-     Parameters
-    -----------
-    ba  :   bytearray key to be converted
+    Args
+        * ba:   bytearray key to be converted
+
+    Returns:
+        ownBase32 key
     """
-    ob32=ownbase32.ownBase32()
+    ob32 = ownbase32.ownBase32()
     keyba = bytearray()
     size = len(ba)
     i = 0

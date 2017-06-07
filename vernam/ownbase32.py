@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
+"""
+ownbase module handles all ownbase encoding, decoding and utilities
+related to ownbase alphabet
+"""
 
 import string
+
 def ownBase32():
     """
     This function just return the ownBase32 alphabet
     """
-    oB32 =  {i:x for i, x in enumerate(string.ascii_lowercase, 0)}
+    oB32 = {i:x for i, x in enumerate(string.ascii_lowercase, 0)}
     # Like in old typewriters, l will work as 1 and o will work as 0
     # because of little name space z will work as 2
     oB32[26] = "3"
@@ -22,12 +27,14 @@ def string2ownBase32(characters):
     This function transforms a string to ownBase32. Just give a string as
     parameter and it will retun a string converted by best effor to ownBase32
 
-     Parameters
-    -----------
-    characters  : String to convert
+    Args:
+        * characters: String to convert
+
+    Returns:
+        A converted strings
     """
     oB32 = ownBase32()
-    inBase32=str()
+    inBase32 = str()
     for c in characters.lower():
         if c is "1":
             c = "l"
@@ -44,7 +51,7 @@ def string2ownBase32(characters):
         if c in oB32.values():
             c = oB32.values().index(c)
         else:
-            print("{} is not an ob32 printable, using space as {}".format(c,c))
+            print("{} is not an ob32 printable, using space as {}".format(c, c))
             c = 31
         inBase32 += oB32[c]
     return inBase32
@@ -56,33 +63,39 @@ def getFromByte(twobytes):
     possible all reads will be in done in 16 bits and 15 bits will be
     used (3 groups of 5)
 
-    This fuction will return an array of three ob32 characters.
+    Args:
+        * data: binary raw data
+    Returns:
+        This fuction will return an array of three ob32 characters.
 
-     Parameters
-    -----------
-    data  : binary raw data
     """
-    one = int('{:016b}'.format(twobytes)[1:6],2)
-    two = int('{:016b}'.format(twobytes)[6:11],2)
-    three = int('{:016b}'.format(twobytes)[11:16],2)
-    return one,two,three
+    one = int('{:016b}'.format(twobytes)[1:6], 2)
+    two = int('{:016b}'.format(twobytes)[6:11], 2)
+    three = int('{:016b}'.format(twobytes)[11:16], 2)
+    return one, two, three
 
 def char2pos(c):
     """
     This function returns char position in oB32 alphabet
 
-     Parameters
-    -----------
-    c   :   a character
+    Args:
+        * c:   a character
+
+    Returns:
+        Char position in ownBase32 alphabet
     """
     return ownBase32().values().index(c)
 
 def string2ob32ba(s):
     """
-    This function returns a byte array of positions in ob32 for the given string
-    s must be ob32 only
+    This function returns a byte array of positions in ob32 for the given
+    strings must be ownbase32 only
 
-    s   : string to convert
+    Args:
+        * s   : string to convert
+
+    Returns:
+        a byte array with string's positions
     """
 
     # for efiecience won't use char2pos function for each char
@@ -100,9 +113,11 @@ def ba2ob32string(ba):
     bytearray to ob32 string.
     this function converts a bytearray to an ob32 string
 
-     Parameters
-    -----------
-    ba : bytearray to convert
+    Args:
+        * ba : bytearray to convert
+
+    Returns:
+        An ownBase32 compilant array
     """
 
     ob32 = ownBase32()

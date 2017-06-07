@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
-import configuration
+"""
+This is the main file of vernam encryption. 
+Please refer to readme.md for general information about this software,
+refer to license.md for license information
+"""
 import argparse
+import configuration
 import vernam
 import keymanagement
 
@@ -10,21 +15,21 @@ if __name__ == '__main__':
 
     #Parse all arguments from command line
     parser = argparse.ArgumentParser(
-                description="Vernam cipher implementation",
-                add_help=True)
+        description="Vernam cipher implementation",
+        add_help=True)
 
     # App can perform one action a time
     actionGr = parser.add_mutually_exclusive_group()
     actionGr.add_argument('-e', '--encrypt', required=False,
-                        action='store_true', help="Start in encryption mode")
+                          action='store_true', help="Start in encryption mode")
     actionGr.add_argument('-d', '--decrypt', required=False,
-                        action='store_true', help="Start in decryption mode")
+                          action='store_true', help="Start in decryption mode")
     actionGr.add_argument('--catalog', required=False, action='store_true',
-                        help="Catalog a new keyfile")
+                          help="Catalog a new keyfile")
     actionGr.add_argument('--printable', required=False, action='store_true',
-                        help="Write to outputfile a printable version of the"+
-                        " key, ready to be used by humans. Warning! this could"+
-                        " be huge.")
+                          help="Write to outputfile a printable version of the"+
+                          " key, ready to be used by humans. Warning! this could"+
+                          " be huge.")
 
     # encrypt or decryption can operate in one mode but only one
     modeGr = parser.add_mutually_exclusive_group()
@@ -73,21 +78,21 @@ if __name__ == '__main__':
     # merge configuration from command line and config file
     config = configuration.parseConfig(configFromFile, args, mode)
     print("input file: {}, output file: {}, config file: {}, ".format(
-            args.inputfile, args.outputfile, args.config)
-            + "key file: {}, operation mode: {}".format(config["keyfile"],
-            config["workmode"]))
+        args.inputfile, args.outputfile, args.config)
+          + "key file: {}, operation mode: {}".format(config["keyfile"],
+                                                      config["workmode"]))
     print(config["workmode"])
     if args.encrypt is True:
         vernam.encrypt(args.inputfile, config["keyfile"], args.outputfile,
-            force=args.force, mode=config["workmode"])
+                       force=args.force, mode=config["workmode"])
     elif args.decrypt is True:
         vernam.decrypt(args.inputfile, config["keyfile"], args.outputfile,
-            force=args.force, mode=config["workmode"])
+                       force=args.force, mode=config["workmode"])
     elif args.catalog is True:
-        keymanagement.catalog(args.inputfile,args.l2r, force = args.force)
+        keymanagement.catalog(args.inputfile, args.l2r, force=args.force)
     elif args.printable is True:
-        keymanagement.printable2file(args.inputfile,args.outputfile, force = args.force)
+        keymanagement.printable2file(args.inputfile, args.outputfile, force=args.force)
     else:
         parser.error("Don't know what to do, an action (encrypt, decrypt or "+
-                    "catalog) is mandatory")
-        print args
+                     "catalog) is mandatory")
+        print (args)

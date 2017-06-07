@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Message class holds all methods to work with message files
+Message module holds all methods to work with message files
 """
 import sys
 import os

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This is the core class form verna encryption. It manages all
+This is the core module form verna encryption. It manages all
 Vernam encryption/decription stuff
 """
 import sys

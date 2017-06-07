@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Keymanagement class holds all logic for key management
+Keymanagement module holds all logic for key management
 """
 
 import sys

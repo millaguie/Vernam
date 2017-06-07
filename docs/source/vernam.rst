@@ -36,38 +36,6 @@ vernam.ownbase32 module
     :undoc-members:
     :show-inheritance:
 
-vernam.test_configuration module
---------------------------------
-
-.. automodule:: vernam.test_configuration
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-vernam.test_keymanagement module
---------------------------------
-
-.. automodule:: vernam.test_keymanagement
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-vernam.test_message module
---------------------------
-
-.. automodule:: vernam.test_message
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-vernam.test_util module
------------------------
-
-.. automodule:: vernam.test_util
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 vernam.util module
 ------------------
 

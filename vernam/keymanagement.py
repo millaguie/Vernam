@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Keymanagement class holds all logic for key management
+Keymanagement module holds all logic for key management
 """
 
 import sys
@@ -16,9 +16,11 @@ def getKeyHashFromKey(keyPath):
     """
     This function get the hashcode for the key, it returns a hash.
 
-     parameters
-    -----------
-    keyPath : path to the file used as key
+    Args:
+        * keyPath: path to the file used as key
+
+    Returns:
+        Key's hash in hexdigest format.
     """
     print("Generating hash of key, this might take some time")
     BLOCKSIZE = 65536
@@ -34,11 +36,13 @@ def catalog(keyPath, l2r, force=False):
     """
     This function catalogs a new keyfile by creating a description yaml file
 
-     Parameters
-    -----------
-    keyPath : path to the file used as key
-    l2r     : True if using left to right key reading
-    force   : Force yaml file overwrite
+    Args:
+        * keyPath: path to the file used as key
+        * l2r: True if using left to right key reading
+        * force: Force yaml file overwrite
+
+    Returns:
+        None
     """
 
     if not os.path.exists(keyPath):
@@ -65,11 +69,13 @@ def checkCatalogUUID(keyPath, binaryUUID=None, asciiUUID=None):
     """
     Function to check key UUID and UUID used in message, returns True or False
 
-     Parameters
-    -----------
-    keyPath     : path to the file used as key
-    binaryUUID  : optional, message UUID in binary format
-    asciiUUID   : optional, message UUID in string format
+    Args:
+        * keyPath: path to the file used as key
+        * binaryUUID: optional, message UUID in binary format
+        * asciiUUID: optional, message UUID in string format
+
+    Returns:
+        True if match false elsewhere
     """
     if not os.path.exists(keyPath):
         sys.exit("Could not find key {}".format(keyPath))
@@ -91,10 +97,11 @@ def getCatalogUUID(keyPath):
     """
     Function to get UUID from key config file, returns an UUID object.
 
-     Parameters
-    -----------
-    keyPath     : path to the file used as key
+    Args:
+        * keyPath: path to the file used as key
 
+    Returns:
+        An UUID object with key's UUID
     """
 
     if not os.path.exists(keyPath):
@@ -113,13 +120,15 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
     readebytes as used into key yaml file, when using waste offset may not be
     set, as we will start in the last byte used.
 
-     Parameters
-    -----------
-    keyPath : path to the file used as key
-    size    : size in bytes to read
-    l2r     : True if using left to right key reading
-    offset  : where in key start to read
-    waste   : Mark read bytes as used and update key config
+    Args:
+        * keyPath: path to the file used as key
+        * size: size in bytes to read
+        * l2r: True if using left to right key reading
+        * offset: where in key start to read
+        * waste: Mark read bytes as used and update key config
+
+    Returns:
+        A byte array with the portion of the key
     """
 
     keySize = os.path.getsize(keyPath)
@@ -173,6 +182,18 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
     return key, offset, l2r
 
 def printable2file(keyPath, outputPath, force=False):
+    """
+    This function performs conversion from a raw binary key file to an
+    ownbase32 and save it in a file
+
+    Args:
+        * keyPath: path to the file used as key
+        * outputPath: path to the generated file
+        * force: Overwrite if outputPath exists
+
+    Returns:
+        None
+    """
     if os.path.exists(outputPath) and force is False:
         sys.exit("Will not overwrite output file without force")
     file = open(outputPath, "w")
@@ -182,6 +203,12 @@ def printable2file(keyPath, outputPath, force=False):
 def printable(keyPath):
     """
     This function returns a string with the printable version of the key
+
+    Args:
+        * keyPath: path to the file used as key
+
+    Returns:
+        a string with ownBase32 version of the key
     """
     if not os.path.exists(keyPath):
         sys.exit("Could not find key {}".format(keyPath))
@@ -206,9 +233,11 @@ def ba2humankeyba(ba):
     bytearray 2 human mode key bytearray
     This function converts a key bytearray to a ownbase32 key
 
-     Parameters
-    -----------
-    ba  :   bytearray key to be converted
+    Args
+        * ba:   bytearray key to be converted
+
+    Returns:
+        ownBase32 key
     """
     ob32 = ownbase32.ownBase32()
     keyba = bytearray()

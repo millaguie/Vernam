@@ -1,5 +1,7 @@
 # Vernam
 [![Build Status](https://travis-ci.org/millaguie/Vernam.svg?branch=master)](https://travis-ci.org/millaguie/Vernam)
+[![Documentation Status](https://readthedocs.org/projects/vernam/badge/?version=latest)](http://vernam.readthedocs.io/en/latest/?badge=latest)
+
 
 Here is a Vernam cipher implementation in python. My goal with this project is
 achive my degree in CS ;) but also create a optimized way to use Vernam cipher

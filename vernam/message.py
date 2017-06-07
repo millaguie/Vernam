@@ -27,10 +27,12 @@ def readMessage(keyPath, messagePath):
     It checks that message key UUID matchs defined key UUID, also checks
     consistency of message via sha512
 
-     Parameters
-    -----------
-    keyPath     : path to the file used as key
-    messagePath : path to the file used to read the message
+    Args:
+        * keyPath: path to the file used as key
+        * messagePath: path to the file used to read the message
+
+    Returns:
+        Data inside the envelope
     """
     keyUUID = keymanagement.getCatalogUUID(keyPath)
     with open(messagePath, "rb") as file:
@@ -59,15 +61,16 @@ def writeHumanMessage(outputPath, message, seek):
     """
     This function writes a message in the human friendly format.
     Format of the message is as follows:
-    
-    offset#message
-    
-     Parameters
-    -----------
-    outputPath  : path to the new message file
-    message     : message to write in the file
-    seek        : offset in key to decrypt message
 
+    offset#message
+
+    Args:
+        * outputPath: path to the new message file
+        * message: message to write in the file
+        * seek: offset in key to decrypt message
+
+    Returns:
+        None
     """
     with open(outputPath, "w") as f:
         f.write("{}#{}".format(seek, ownbase32.ba2ob32string(message)))
@@ -77,9 +80,14 @@ def readHumanMessage(inputPath):
     This function reads a message in the human friendly format.
     Function will return two elements, key offset and the
     encrypted message.
-     Parameter
-    ----------
-    inputPath   : path to the message file to read
+
+    Args:
+        * inputPath: path to the message file to read
+
+    Returns:
+        An array:
+            * Offset in the key
+            * Encrypted message
     """
     with open(inputPath, "r") as f:
         s = f.read()
@@ -90,22 +98,21 @@ def readHumanMessage(inputPath):
 
 def writeMessage(keyPath, messagePath, ciphered, offsetInKey, l2r=True):
     """
-    This function Writes a message in the defined format.
-    Format of the message is as follows
-    * Header 20 bytes, as defined, two options, one for R2L and another for L2R
-      it's on the todo.
-    * Message size in 8 bytes (64 bits) integer
-    * Key UUID used in message 16 bytes
-    * Message it's self, it's size is defined in the second field
-    * Hash of the message, 32 bytes a sha512
+    This function Writes a message in the defined format. Format of the message is as follows:
+        * Header 20 bytes, as defined, two options, one for R2L and another for L2R it's on the todo.
+        * Message size in 8 bytes (64 bits) integer
+        * Key UUID used in message 16 bytes
+        * Message it's self, it's size is defined in the second field
+        * Hash of the message, 32 bytes a sha512
 
-     Parameters
-    -----------
-    keyPath     : path to the file used as key
-    messagePath : path to the file used to store the message
-    ciphered    : ciphered data to write in the file (envelope)
-    offsetInKey : need to jump to this byte in key to decrypt
-    l2r         : Indicates if the key will need to be readed R2L or L2R (True)
+    Args:
+        * keyPath: path to the file used as key
+        * messagePath: path to the file used to store the message
+        * ciphered: ciphered data to write in the file (envelope)
+        * offsetInKey: need to jump to this byte in key to decrypt
+        * l2r: Indicates if the key will need to be readed R2L or L2R (True)
+    Returns:
+        None
     """
 
     keyUUID = keymanagement.getCatalogUUID(keyPath)

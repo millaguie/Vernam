@@ -18,15 +18,16 @@ def encrypt(inputPath, keyPath, outputPath, force=False, mode="raw"):
     This function performs vernam encryption using an input file and a key,
     result is stored in output file.
 
-     parameters
-    -----------
-    inputPath  : path to the file used as input
-    keyPath    : path to the file used as key
-    outputPath : path to the file used as output
-    mode       : working mode, Modes are:
-        * raw: traditional way
-        * lz4: all input data will be compressed via lz4
-        * human: all data will be converted to ownBase32 beforehand
+    Args:
+        * inputPath  : path to the file used as input
+        * keyPath    : path to the file used as key
+        * outputPath : path to the file used as output
+        * mode       : working mode, Modes are:
+            * raw: traditional way
+            * lz4: all input data will be compressed via lz4
+            * human: all data will be converted to ownBase32 beforehand
+    Returns:
+        None
     """
     if not os.path.exists(inputPath):
         sys.exit("Could not find input file {}".format(inputPath))
@@ -71,15 +72,16 @@ def decrypt(inputPath, keyPath, outputPath, force=False, mode="raw"):
     This function performs vernam decryption using an input file and a key,
     result is stored in output file.
 
-     parameters
-    -----------
-    inputPath  : path to the file used as input
-    keyPath    : path to the file used as key
-    outputPath : path to the file used as output
-    mode       : working mode, Modes are:
-        * raw: traditional way
-        * lz4: all input data will be decompressed via lz4
-        * human: all data will be converted to ownBase32 beforehand
+    Args:
+        * inputPath  : path to the file used as input
+        * keyPath    : path to the file used as key
+        * outputPath : path to the file used as output
+        * mode       : working mode, Modes are:
+            * raw: traditional way
+            * lz4: all input data will be decompressed via lz4
+            * human: all data will be converted to ownBase32 beforehand
+    Returns:
+        None
     """
     if not os.path.exists(inputPath):
         sys.exit("Could not find input file {}".format(inputPath))
@@ -120,10 +122,11 @@ def vernam(one, two):
     This function performs vernam (de)ciphering with two bytearrays, order
     doesn't matter as it is a pure xor fuction. function will return xored
     bytearray
- 
-    parameters
-    ----------
-    one, two : Two arraybytes to perform vernam cipher.
+
+    Args:
+        * one, two : Two arraybytes to perform vernam cipher.
+    Returns:
+        A bytearray with Vernam results
     """
     if len(one) != len(two):
         sys.exit("arraybytes length differs, can not vernam with them")

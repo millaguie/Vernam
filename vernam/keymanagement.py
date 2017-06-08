@@ -164,7 +164,7 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
                 keySize - (offset - size), keySize))
     else:
         if offset + size > keySize:
-            print("Do not have enough unused key to complete this action",file=sys.stderr))
+            print("Do not have enough unused key to complete this action",file=sys.stderr)
             sys.exit(101)
         else:
             print("{} of {} bytes will be in use after this action".format(

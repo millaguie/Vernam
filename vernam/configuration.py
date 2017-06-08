@@ -19,7 +19,7 @@ def readConfig(config):
 
         workmode:  You can choose one of the following methods:
             * lz4: Will compress input or decompres output with lz4, this has a great performance with all file types.
-            * base32: Old style. key will be read as 5 bits blocks, input and output will use  ownBase32 encoding. This is useful when one of the sides is doing the maths by hand.
+            * human: human usable mode. key will be read as 5 bits blocks, input and output will use  ownBase32 encoding. This is useful when one of the sides is doing the maths by hand.
             * raw: default operation mode, will use 1KB pages for ciphering
     Returns:
         An array with configuration from file
@@ -49,8 +49,6 @@ def parseConfig(configFromFile, configFromCmd, mode="raw"):
     if mode is "lz4":
         conf["workmode"] = "lz4"
         print("mode lz4")
-    elif mode is "base32":
-        conf["workmode"] = "base32"
     elif mode is "human":
         conf["workmode"] = "human"
     elif configFromFile['workmode'] is not None:

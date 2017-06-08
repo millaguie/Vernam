@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This is the main file of vernam encryption. 
+This is the main file of vernam encryption.
 Please refer to readme.md for general information about this software,
 refer to license.md for license information
 """
@@ -35,8 +35,6 @@ if __name__ == '__main__':
     modeGr = parser.add_mutually_exclusive_group()
     modeGr.add_argument('--lz4', action='store_true', default=False,
                         help="Use lz4 compression mode")
-    modeGr.add_argument('--base32', action='store_true', default=False,
-                        help="Use base32 mode")
     modeGr.add_argument('--raw', action='store_true', default=False,
                         help="Use raw mode (default option)")
     modeGr.add_argument('--human', action='store_true', default=False,
@@ -66,8 +64,6 @@ if __name__ == '__main__':
     configFromFile = configuration.readConfig(args.config)
     if args.lz4 is True:
         mode = "lz4"
-    elif args.base32 is True:
-        mode = "base32"
     elif args.raw is True:
         mode = "raw"
     elif args.human is True:

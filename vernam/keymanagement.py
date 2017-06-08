@@ -2,7 +2,7 @@
 """
 Keymanagement module holds all logic for key management
 """
-
+from __future__ import print_function
 import sys
 import os
 import uuid
@@ -145,11 +145,13 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
         l2r = not keyConfig["l2r"]
 
     if l2r is True and offset + size >= keySize:
-        sys.exit("Do not have enough unused key to complete this action")
+        print("Do not have enough unused key to complete this action", file=sys.stderr)
+        sys.exit(101)
 
     if l2r is False:
         if offset - size <= 0:
-            sys.exit("Do not have enough unused key to complete this action")
+            print("Do not have enough unused key to complete this action", file=sys.stderr)
+            sys.exit(101)
         else:
             print("{} of {} bytes will be in use after this action".format(
                 keySize - (offset - size), keySize))

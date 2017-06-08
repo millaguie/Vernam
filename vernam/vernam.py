@@ -50,7 +50,7 @@ def encrypt(inputPath, keyPath, outputPath, force=False, mode="raw"):
         raise
     if mode == "human":
         # An even number of bytes is needed for tranformation.
-        size = int(math.ceil(((len(inputfile) / 3)/2.)) * 2)
+        size = int(math.ceil(((len(inputfile)+1 / 3)/2.)) * 2)
     else:
         size = len(inputfile)
 
@@ -94,7 +94,7 @@ def decrypt(inputPath, keyPath, outputPath, force=False, mode="raw"):
     if mode == "human":
         seek, inputCryp = message.readHumanMessage(inputPath)
         offset = seek / 3
-        size = int(math.ceil(((len(inputCryp) / 3)/2.)) * 2)
+        size = int(math.ceil(((len(inputCryp)+1 / 3)/2.)) * 2)
         l2r = True
     else:
         offset, l2r, inputCryp = message.readMessage(keyPath, inputPath)

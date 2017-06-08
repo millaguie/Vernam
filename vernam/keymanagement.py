@@ -234,8 +234,8 @@ def printable(keyPath):
         byte = unpack(">H", file.read(2))[0]
         while byte:
             usable = ownbase32.getFromByte(byte)
-            s+="{}{}{}".format(ob32[usable[0]+1], ob32[usable[1]+1],
-                               ob32[usable[2]+1])
+            s+="{}{}{}".format(ob32[usable[0]], ob32[usable[1]],
+                               ob32[usable[2]])
             byte = unpack(">h", file.read(2))[0]
     except:
         raise

@@ -233,7 +233,6 @@ def printable(keyPath):
         ob32 = ownbase32.ownBase32()
         file = open(keyPath, 'rb')
         size = int(math.ceil(((os.path.getsize(keyPath)/2.)) * 2))
-        print(size)
         return ownbase32.ba2ob32string(ba2humankeyba(bytearray(file.read(size))))
     except:
         raise
@@ -257,7 +256,6 @@ def ba2humankeyba(ba):
     while i < size:
         ab = (ba[i]<<8)|ba[i]
         one, two, three = ownbase32.getFromByte(ab)
-        print("ba: {}, one: {}, two: {}, three {}".format(ba[i],one,two, three))
         keyba.append(one)
         keyba.append(two)
         keyba.append(three)

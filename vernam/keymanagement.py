@@ -7,6 +7,7 @@ import sys
 import os
 import uuid
 import hashlib
+import math
 from struct import unpack
 import yaml
 import ownbase32
@@ -231,12 +232,9 @@ def printable(keyPath):
     try:
         ob32 = ownbase32.ownBase32()
         file = open(keyPath, 'rb')
-        byte = unpack(">H", file.read(2))[0]
-        while byte:
-            usable = ownbase32.getFromByte(byte)
-            s+="{}{}{}".format(ob32[usable[0]], ob32[usable[1]],
-                               ob32[usable[2]])
-            byte = unpack(">h", file.read(2))[0]
+        size = int(math.ceil(((os.path.getsize(keyPath)/2.)) * 2))
+        print(size)
+        return ownbase32.ba2ob32string(ba2humankeyba(bytearray(file.read(size))))
     except:
         raise
     return s
@@ -257,8 +255,9 @@ def ba2humankeyba(ba):
     size = len(ba)
     i = 0
     while i < size:
-        ab = (ba[i]<<8)|ba[2]
+        ab = (ba[i]<<8)|ba[i]
         one, two, three = ownbase32.getFromByte(ab)
+        print("ba: {}, one: {}, two: {}, three {}".format(ba[i],one,two, three))
         keyba.append(one)
         keyba.append(two)
         keyba.append(three)

@@ -52,7 +52,7 @@ class SimplisticTest(unittest.TestCase):
         f.write(b)
         f.close()
         keymanagement.catalog(f.name, True, force = True)
-        assert "gvx6ml6rb" == keymanagement.printable(f.name)
+        assert "fuwfuwfuwfuwfuwaaaaaaaaaaaa" == keymanagement.printable(f.name)
         clearFakeKey(f)
 
 

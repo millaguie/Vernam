@@ -2,7 +2,19 @@
 """
 This is the main file of vernam encryption.
 Please refer to readme.md for general information about this software,
-refer to license.md for license information
+refer to license.md for license information.
+
+Program has use this exit codes:
+  * 5: arraybytes length differs, can not vernam with them
+  * 10: Could not find input file
+  * 11: Will not overwrite output file without force
+  * 101: Do not have enough unused key to complete this action
+  * 102: Key is smaller than key offset
+  * 103: Could not find key file
+  * 104: Could not find descriptor for key, please catalog it before
+  * 105: A description file already exists, won't create a new one
+
+  print(,file=sys.stderr)
 """
 import argparse
 import configuration
@@ -77,7 +89,6 @@ if __name__ == '__main__':
         args.inputfile, args.outputfile, args.config)
           + "key file: {}, operation mode: {}".format(config["keyfile"],
                                                       config["workmode"]))
-    print(config["workmode"])
     if args.encrypt is True:
         vernam.encrypt(args.inputfile, config["keyfile"], args.outputfile,
                        force=args.force, mode=config["workmode"])

@@ -3,6 +3,7 @@
 This is the core module form verna encryption. It manages all
 Vernam encryption/decription stuff
 """
+from __future__ import print_function
 import sys
 import os
 import math
@@ -30,15 +31,18 @@ def encrypt(inputPath, keyPath, outputPath, force=False, mode="raw"):
         None
     """
     if not os.path.exists(inputPath):
-        sys.exit("Could not find input file {}".format(inputPath))
+        print("Could not find input file {}".format(inputPath),file=sys.stderr)
+        sys.exit(10)
     if os.path.exists(outputPath):
         if force is False:
-            sys.exit("output file exists, won't overwrite {}".format(
-                outputPath))
+            print("output file exists, won't overwrite {}".format(
+                outputPath),file=sys.stderr)
+            sys.exit(11)
         else:
             sys.stderr.write("Output file will be overwritten as requested.\n")
     if not os.path.exists(keyPath):
-        sys.exit("key file not found\n")
+        print("Could not find key {}".format(keyPath),file=sys.stderr)
+        sys.exit(103)
     try:
         if mode == "lz4":
             inputfile = bytearray(compressHC((open(inputPath, 'rb')).read()))
@@ -50,7 +54,7 @@ def encrypt(inputPath, keyPath, outputPath, force=False, mode="raw"):
         raise
     if mode == "human":
         # An even number of bytes is needed for tranformation.
-        size = int(math.ceil(((len(inputfile) / 3)/2.)) * 2)
+        size = int(math.ceil(((len(inputfile)+1 / 3)/2.)) * 2)
     else:
         size = len(inputfile)
 
@@ -84,23 +88,24 @@ def decrypt(inputPath, keyPath, outputPath, force=False, mode="raw"):
         None
     """
     if not os.path.exists(inputPath):
-        sys.exit("Could not find input file {}".format(inputPath))
+        print("Could not find input file {}".format(inputPath),file=sys.stderr)
+        sys.exit(10)
     if os.path.exists(outputPath):
         if force is False:
-            sys.exit("output file exists, won't overwrite {}".format(
-                outputPath))
+            print("output file exists, won't overwrite {}".format(
+                outputPath),file=sys.stderr)
+            sys.exit(11)
         else:
             sys.stderr.write("Output file will be overwritten as requested.\n")
     if mode == "human":
         seek, inputCryp = message.readHumanMessage(inputPath)
         offset = seek / 3
-        size = int(math.ceil(((len(inputCryp) / 3)/2.)) * 2)
+        size = int(math.ceil(((len(inputCryp)+1 / 3)/2.)) * 2)
         l2r = True
     else:
         offset, l2r, inputCryp = message.readMessage(keyPath, inputPath)
         offset = offset[0]
         size = len(inputCryp)
-    print("offset: {} - {}, l2r: {}".format(offset, type(offset), l2r))
     key = keymanagement.getKeyBytes(keyPath, size, offset=offset, l2r=l2r)
     key = bytearray(key[0])
     if mode == "human":
@@ -129,7 +134,8 @@ def vernam(one, two):
         A bytearray with Vernam results
     """
     if len(one) != len(two):
-        sys.exit("arraybytes length differs, can not vernam with them")
+        print("arraybytes length differs, can not vernam with them",file=sys.stderr)
+        sys.exit(5)
     size = len(one)
     outputfile = bytearray(size)
     for i in range(size):

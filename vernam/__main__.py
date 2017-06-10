@@ -1,8 +1,20 @@
 # -*- coding: utf-8 -*-
 """
-This is the main file of vernam encryption. 
+This is the main file of vernam encryption.
 Please refer to readme.md for general information about this software,
-refer to license.md for license information
+refer to license.md for license information.
+
+Program has use this exit codes:
+  * 5: arraybytes length differs, can not vernam with them
+  * 10: Could not find input file
+  * 11: Will not overwrite output file without force
+  * 101: Do not have enough unused key to complete this action
+  * 102: Key is smaller than key offset
+  * 103: Could not find key file
+  * 104: Could not find descriptor for key, please catalog it before
+  * 105: A description file already exists, won't create a new one
+
+  print(,file=sys.stderr)
 """
 import argparse
 import configuration
@@ -35,8 +47,6 @@ if __name__ == '__main__':
     modeGr = parser.add_mutually_exclusive_group()
     modeGr.add_argument('--lz4', action='store_true', default=False,
                         help="Use lz4 compression mode")
-    modeGr.add_argument('--base32', action='store_true', default=False,
-                        help="Use base32 mode")
     modeGr.add_argument('--raw', action='store_true', default=False,
                         help="Use raw mode (default option)")
     modeGr.add_argument('--human', action='store_true', default=False,
@@ -66,8 +76,6 @@ if __name__ == '__main__':
     configFromFile = configuration.readConfig(args.config)
     if args.lz4 is True:
         mode = "lz4"
-    elif args.base32 is True:
-        mode = "base32"
     elif args.raw is True:
         mode = "raw"
     elif args.human is True:
@@ -81,7 +89,6 @@ if __name__ == '__main__':
         args.inputfile, args.outputfile, args.config)
           + "key file: {}, operation mode: {}".format(config["keyfile"],
                                                       config["workmode"]))
-    print(config["workmode"])
     if args.encrypt is True:
         vernam.encrypt(args.inputfile, config["keyfile"], args.outputfile,
                        force=args.force, mode=config["workmode"])

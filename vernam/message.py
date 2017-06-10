@@ -41,7 +41,6 @@ def readMessage(keyPath, messagePath):
             L2R = True
         elif header == R2LHEADER:
             L2R = False
-            print("AQUI")
         else:
             raise ValueError("File format unknown")
         msgSize = unpack(">Q", file.read(8))[0]
@@ -54,7 +53,6 @@ def readMessage(keyPath, messagePath):
         msgFileHash = file.read()
         if hashSum(message) != msgFileHash.encode("hex"):
             raise ValueError("Failed to hash message ")
-        print("LECTURA -> offset: {}, L2R: {}".format(offsetInKey, L2R))
         return offsetInKey, L2R, message
 
 def writeHumanMessage(outputPath, message, seek):

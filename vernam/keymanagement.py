@@ -2,11 +2,12 @@
 """
 Keymanagement module holds all logic for key management
 """
-
+from __future__ import print_function
 import sys
 import os
 import uuid
 import hashlib
+import math
 from struct import unpack
 import yaml
 import ownbase32
@@ -46,9 +47,11 @@ def catalog(keyPath, l2r, force=False):
     """
 
     if not os.path.exists(keyPath):
-        sys.exit("Could not find key {}".format(keyPath))
+        print("Could not find key {}".format(keyPath),file=sys.stderr)
+        sys.exit(103)
     if os.path.exists(keyPath+".yaml") and force is False:
-        sys.exit("A description file already exists, won't create a new one")
+        print("A description file already exists, won't create a new one",file=sys.stderr)
+        sys.exit(105)
     genUUID = uuid.uuid4()
     hashSum = getKeyHashFromKey(keyPath)
     if l2r is False:
@@ -78,9 +81,11 @@ def checkCatalogUUID(keyPath, binaryUUID=None, asciiUUID=None):
         True if match false elsewhere
     """
     if not os.path.exists(keyPath):
-        sys.exit("Could not find key {}".format(keyPath))
+        print("Could not find key {}".format(keyPath),file=sys.stderr)
+        sys.exit(103)
     if not os.path.exists(keyPath+".yaml"):
-        sys.exit("Could not find decriptor for key, please catalog it before")
+        sprint("Could not find descriptor for key, please catalog it before",file=sys.stderr)
+        sys.exit(104)
 
     keyConfig = {}
     keyConfig = yaml.load(open(keyPath+".yaml", 'r'))
@@ -105,9 +110,11 @@ def getCatalogUUID(keyPath):
     """
 
     if not os.path.exists(keyPath):
-        sys.exit("Could not find key {}".format(keyPath))
+        print("Could not find key {}".format(keyPath),file=sys.stderr)
+        sys.exit(103)
     if not os.path.exists(keyPath+".yaml"):
-        sys.exit("Could not find decriptor for key, please catalog it before")
+        print("Could not find descriptor for key, please catalog it before",file=sys.stderr)
+        sys.exit(104)
 
     keyConfig = {}
     keyConfig = yaml.load(open(keyPath+".yaml", 'r'))
@@ -134,7 +141,8 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
     keySize = os.path.getsize(keyPath)
 
     if offset is not None and offset > keySize:
-        sys.exit("key is smaller than key offset")
+        print("key is smaller than key offset", file=sys.stderr)
+        sys.exit(102)
 
     keyConfig = yaml.load(open(keyPath+".yaml", 'r'))
     if offset is None and waste is True:
@@ -145,17 +153,20 @@ def getKeyBytes(keyPath, size, l2r=None, offset=None, waste=False):
         l2r = not keyConfig["l2r"]
 
     if l2r is True and offset + size >= keySize:
-        sys.exit("Do not have enough unused key to complete this action")
+        print("Do not have enough unused key to complete this action", file=sys.stderr)
+        sys.exit(101)
 
     if l2r is False:
         if offset - size <= 0:
-            sys.exit("Do not have enough unused key to complete this action")
+            print("Do not have enough unused key to complete this action", file=sys.stderr)
+            sys.exit(101)
         else:
             print("{} of {} bytes will be in use after this action".format(
                 keySize - (offset - size), keySize))
     else:
         if offset + size > keySize:
-            sys.exit("Do not have enough unused key to complete this action")
+            print("Do not have enough unused key to complete this action",file=sys.stderr)
+            sys.exit(101)
         else:
             print("{} of {} bytes will be in use after this action".format(
                 offset + size, keySize))
@@ -195,7 +206,8 @@ def printable2file(keyPath, outputPath, force=False):
         None
     """
     if os.path.exists(outputPath) and force is False:
-        sys.exit("Will not overwrite output file without force")
+        print("Will not overwrite output file without force",file=sys.stderr)
+        sys.exit(11)
     file = open(outputPath, "w")
     file.write(printable(keyPath))
     file.close()
@@ -211,19 +223,17 @@ def printable(keyPath):
         a string with ownBase32 version of the key
     """
     if not os.path.exists(keyPath):
-        sys.exit("Could not find key {}".format(keyPath))
+        print("Could not find key {}".format(keyPath),file=sys.stderr)
+        sys.exit(103)
     if not os.path.exists(keyPath+".yaml"):
-        sys.exit("Could not find decriptor for key, please catalog it before")
+        print("Could not find descriptor for key, please catalog it before",file=sys.stderr)
+        sys.exit(104)
     s = str()
     try:
         ob32 = ownbase32.ownBase32()
         file = open(keyPath, 'rb')
-        byte = unpack(">H", file.read(2))[0]
-        while byte:
-            usable = ownbase32.getFromByte(byte)
-            s+="{}{}{}".format(ob32[usable[0]+1], ob32[usable[1]+1],
-                               ob32[usable[2]+1])
-            byte = unpack(">h", file.read(2))[0]
+        size = int(math.ceil(((os.path.getsize(keyPath)/2.)) * 2))
+        return ownbase32.ba2ob32string(ba2humankeyba(bytearray(file.read(size))))
     except:
         raise
     return s
@@ -244,7 +254,7 @@ def ba2humankeyba(ba):
     size = len(ba)
     i = 0
     while i < size:
-        ab = (ba[i]<<8)|ba[2]
+        ab = (ba[i]<<8)|ba[i]
         one, two, three = ownbase32.getFromByte(ab)
         keyba.append(one)
         keyba.append(two)

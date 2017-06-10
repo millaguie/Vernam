@@ -106,7 +106,6 @@ def decrypt(inputPath, keyPath, outputPath, force=False, mode="raw"):
         offset, l2r, inputCryp = message.readMessage(keyPath, inputPath)
         offset = offset[0]
         size = len(inputCryp)
-    print("offset: {} - {}, l2r: {}".format(offset, type(offset), l2r))
     key = keymanagement.getKeyBytes(keyPath, size, offset=offset, l2r=l2r)
     key = bytearray(key[0])
     if mode == "human":

@@ -97,18 +97,18 @@ Send output file to bob via an insecure system.
 
 And bob will be able to read message using the shared key:
 
-'''
+```
 bob@securesystem2:~/Vernam$ python -m vernam -d -k keyfile -i sendbob -o secretmessage.txt
 input file: sendbob, output file: secretmessage.txt, config file: config.yaml, key file: keyfile, operation mode: lz4
 Output file will be overwritten as requested.
 32 of 1048576 bytes will be in use after this action
 bob@securesystem2:~/Vernam$ cat secretmessage.txt
 Meet me at the gates ASAP
-'''
+```
 
 You can get more information from --help switch
 
-'''
+```
 $ python -m vernam --help
 usage: __main__.py [-h] [-e | -d | --catalog | --printable]
                    [--lz4 | --base32 | --raw | --human] -i INPUTFILE
@@ -142,7 +142,7 @@ optional arguments:
   --l2r                 When catalogging a key, select read mode right to
                         left, by default will use left to right
 
-'''
+```
 ## Author
 
 * **Fco. Javier Picado Ladrón de Guevara** - [millaguie](https://github.com/millaguie)

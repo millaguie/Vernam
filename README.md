@@ -149,4 +149,4 @@ optional arguments:
 
 ## License
 This project is licensed under BSD 3-clause "New" or "Revised" License - see the
-[LICENSE.md](LICENSE.md) file for details
+[LICENSE](LICENSE) file for details

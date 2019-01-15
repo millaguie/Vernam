@@ -1,5 +1,5 @@
 lz4==0.8.2
-PyYAML==4.2b1
+PyYAML
 pytest
 pytest-cov
 

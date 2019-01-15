@@ -1,5 +1,5 @@
-lz4==0.8.2
+lz4
 PyYAML
-pytest
+pytest>=3.6
 pytest-cov
 
